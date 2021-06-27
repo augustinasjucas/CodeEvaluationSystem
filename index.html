@@ -1,3 +1,20 @@
 <html>
-    HELLO!
+    <head>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            var socket = io.connect();                                  // LABAI SVARBI EILUTĖ - įjungia socket.io, kad
+                                                                        // būtų galima bendrauti su serveriu!
+            function buttonPressed(){
+                var cd = document.getElementById("inputWord").value;   // tai, kas parašyta inpute, dabar bus cd
+                socket.emit("buttonPressed", {code: cd});              // išsiunčiu 'buttonPressed' signalą serveriui
+                                                                        // ir paduodu 'data' kintamąjį, kuriame
+                                                                        // data.code = cd.
+            }
+        </script>
+    </head>
+    <body>
+        <textarea id="inputWord" rows="40" cols="100"></textarea>
+        <br />
+        <button onclick="buttonPressed()">PASPAUSK MANE, LABAI PRAŠAU!</button>
+    </body>
 </html>
