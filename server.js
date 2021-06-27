@@ -12,6 +12,3 @@ console.log("Server is working!");
 app.get('/index', function(req, res){
 	res.sendFile(__dirname + '/index.html');
 });
-
-"socket.io": "*",
-"express": "*"
