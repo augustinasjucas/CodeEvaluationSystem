@@ -5,8 +5,8 @@
             var socket = io.connect();                                  // LABAI SVARBI EILUTĖ - įjungia socket.io, kad
                                                                         // būtų galima bendrauti su serveriu!
             function buttonPressed(){
-                var cd = document.getElementById("inputWord").value;   // tai, kas parašyta inpute, dabar bus cd
-                socket.emit("buttonPressed", {code: cd});              // išsiunčiu 'buttonPressed' signalą serveriui
+                var cd = document.getElementById("inputWord").value;    // tai, kas parašyta inpute, dabar bus cd
+                socket.emit("buttonPressed", {code: cd});               // išsiunčiu 'buttonPressed' signalą serveriui
                                                                         // ir paduodu 'data' kintamąjį, kuriame
                                                                         // data.code = cd.
             }

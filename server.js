@@ -24,13 +24,13 @@ function launchCode(code){
 	fs.writeFile(codeName, code, function (err) {									// sukuria šitą failą
   		if (err) throw err;
 	});
-	exec('g++ -o failas -std=c++17 failas.cpp && ./failas', (error, stdout, stderr) => {
-	  if (error) {
-	    console.error(`exec error: ${error}`);
-	    return;
-	  }
-	  console.log(`stdout: ${stdout}`);
-	  console.error(`stderr: ${stderr}`);
+	exec('g++ -o failas -std=c++17 failas.cpp && ./failas', (error, stdout, stderr) => {	// paleidžia failas.cpp ir išrašo viską į konsolę
+		if (error) {
+			console.error(`exec error: ${error}`);
+			return;
+		}
+		console.log(`stdout: ${stdout}`);
+		console.error(`stderr: ${stderr}`);
 	});
 }
 
