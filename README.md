@@ -2,7 +2,7 @@
 VALIO!
 
 To download all the node_modules:
-/n
+\\
 cd SistemaAA
 npm install
 cd client && npm install && npm run build
