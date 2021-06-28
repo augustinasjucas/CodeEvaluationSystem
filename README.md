@@ -1,19 +1,18 @@
 # SistemaAA
-VALIO!
 
 To download all the node_modules:
 `
 npm install && cd client && npm install && npm run build
-`
+`.
 
 To start the server:
 `
 npm start
-`
+`.
 To start the client:
 `
 cd client && npm start
-`
+`.
 
 Then the client will be on `localhost:3000` and the server on `localhost:3001`
 
