@@ -3,8 +3,7 @@ VALIO!
 
 To download all the node_modules:
 `
-npm install
-cd client && npm install && npm run build
+npm install && cd client && npm install && npm run build
 `
 
 To start the server:
