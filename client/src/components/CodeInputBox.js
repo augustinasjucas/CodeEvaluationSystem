@@ -11,7 +11,8 @@ const CodeInputBox = ({placeholder, onSubmit}) => {
     }
     return (
         <div className="App">
-            <textarea onChange= {onChange}>{placeholder}</textarea>
+            <textarea rows='40' cols='80' onChange= {onChange}>{placeholder}</textarea>
+            <br />
             <button onClick={onClick}>Submit</button>
         </div>
       );

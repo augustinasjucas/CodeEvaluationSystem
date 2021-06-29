@@ -1,0 +1,6 @@
+{
+    "name": "Suma",
+    "time_limit": 500,
+    "subtasks": [{"points": 1, "tests": ["001", "002", "003", "004", "005", "006"]}],
+    "tests": 11
+}
