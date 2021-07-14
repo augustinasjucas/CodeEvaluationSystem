@@ -136,6 +136,7 @@ async function runCode(code, taskName){
 
     }
     await Promise.all(results);                                                                     // wait until all results' promises are done
+    console.log('awaitinau resultatu!');
     await removeFile(codePath);                                                                     // after everything, remove used files
     await removeFile(execPath);
 
