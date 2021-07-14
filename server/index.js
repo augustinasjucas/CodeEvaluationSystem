@@ -45,6 +45,8 @@ async function createFile(path, value){                                         
     return new Promise((resolve, reject) => {
         fs.writeFile(path, value, function (err) {
             if (err) {
+                console.log('err yra ');
+                console.log(err);
                 reject();
                 return ;
             }
@@ -57,6 +59,7 @@ async function runTest(inputPath, execPath, timeLimit, memoryLimit){            
                                                                                                     // test and returns
                                                                                                     // {error, stdout, stderr}
 
+    console.log('run the test + ' + inputPath);
     var ret = {error: null, stdout: {}, stderr: {}};                                                // initializes the return value
     var curNum = currentSubmissionNumber++;
     var outputName = path.join(__dirname, '/submissionsFolder/outputOf' + curNum + '.out');
@@ -113,7 +116,9 @@ async function runCode(code, taskName){
     var execPath = path.join(__dirname, '/submissionsFolder/' + curNum + '.out');                   // the path to executable
 
     await createFile(codePath, code);                                                               // creates the cpp file
+
     var results = []                                                                                // prepare to store all test results
+
     await executeCommand('g++ -DEVAL -O3 -fsanitize=undefined -std=c++17 -o ' + execPath + ' ' + codePath, 10000, 20).then((data) => {  // compiles
         if(data.error) results[0] = data;                                                           // if couldnt compile, this data will be returned
     });
