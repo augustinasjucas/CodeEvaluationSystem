@@ -1,5 +1,12 @@
 # SistemaAA
 
+To get `runexec` module: 
+`
+sudo add-apt-repository ppa:sosy-lab/benchmarking
+sudo apt install benchexec
+adduser <USER, pvz augustinasjucas> benchexec
+`
+
 To download all the node_modules:
 `
 npm install && cd client && npm install && npm run build
