@@ -40,8 +40,8 @@ async function fileExists (path) {                                              
 function executeCommand (command, timeLimit, memoryLimit) {                                         // executes a command asynchronously
                                                                                                     // used with await or .then
     return new Promise((resolve, reject) => {
-        let mem = Math.max(Math.round(memoryLimit*1024), 100);
-        command = 'ulimit -v ' + mem + ' & ' + command;
+        let mem = Math.max(Math.round((memoryLimit + 16)*1024), 100);                               // add 16MB to memory limit for libraries
+        command = 'ulimit -s unlimited && ulimit -v ' + mem + ' && ' + command;
         exec(command, {timeout: timeLimit, maxBuffer: 1024*1024*40}, (error, stdout, stderr) => {   // allow 40MB to be cout'ed
             resolve({ error, stderr, stdout});
         });
@@ -146,6 +146,18 @@ async function extractResult(test, correctOutput){                              
         }
         if(findPattern(test.stderr, 'segmentation fault')){
             resolve({points: 0, message: 'SEG'});
+        }
+        if(findPattern(test.stderr, 'signal 9')){
+            resolve({points: 0, message: 'SIG9'});
+        }
+        if(findPattern(test.stderr, 'signal 11')){
+            resolve({points: 0, message: 'SIG11'});
+        }
+        if(findPattern(test.stderr, 'terminated')){
+            resolve({points: 0, message: 'ABN'});
+        }
+        if(findPattern(test.stderr, 'error')){
+            resolve({points: 0, message: 'ABN'});
         }
         let command = 'echo "' + correctOutput + ' ' + test.stdout + '" | ' + path.join(__dirname, '/additionalPrograms/comparison');
         executeCommand(command, 10000, 10)
