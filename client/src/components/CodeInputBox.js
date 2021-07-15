@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from 'react';
 
 const CodeInputBox = ({placeholder, onSubmit}) => {
-    let code = placeholder;
 
+
+    const [code, changeCode] = useState(placeholder);
     const onChange = (e) => {
-        code = e.target.value;
+        changeCode(e.target.value);
     }
     const onClick = () => {                                                 // when the button is clicked, onSubmit (in
         onSubmit(code);                                                     // App.js) is called with the current code
