@@ -1,4 +1,8 @@
-var submissions = [];
+const fs = require('fs');
+const path = require('path');
+
+var submissions = [];                                                       // temporary. has:
+var users =[{username: 'insertUsername', password: 'insertHashedPassword'}];// temporary. has: username(string), password(string)
 
 function getLastSubmissionNumber(){                                         // return the number of the last submission
     return new Promise((resolve, reject) => {
@@ -33,11 +37,48 @@ function getSubResult(index){                                               // r
         ////////
     });
 }
+function findIfUserExists(username, password){
+    return new Promise((resolve, reject) => {
+        //////// to be replaced with db
+        for(var i = 0; i < users.length; i++) if(users[i].username == username && users[i].password == password) resolve(true);
+        resolve(false);
+        ////////
+    });
+}
+
+function getTask(taskName){                                                         // this one is fully written, no need to change it
+    return new Promise((resolve, reject) => {
+        var pathToInfo = path.join(__dirname, 'tasks/' + taskName + '/info.json');
+        var pathToStatement = path.join(__dirname, 'tasks/' + taskName + '/statement.txt');
+        var ret = {statement: '',  name: '', timeLimit: 0, memoryLimit: 0};
+        if(fs.existsSync(pathToInfo)) {
+            var info = require(pathToInfo);
+            ret.name = info.name;
+            ret.timeLimit = info.time_limit;
+            ret.memoryLimit = info.memory_limit;
+        }else{
+            resolve({});
+        }
+        if(fs.existsSync(pathToStatement)) {
+            try{
+                const data = fs.readFileSync(pathToStatement, 'utf8')
+                ret.statement = data;
+            }catch (err){
+                resolve({});
+            }
+        }else{
+            resolve({});
+        }
+        resolve(ret);
+    });
+}
 
 module.exports = {
     getLastSubmissionNumber,
     addSubmission,
     findIfSubExists,
     getSubResult,
+    findIfUserExists,
+    getTask
 
 }

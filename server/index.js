@@ -35,6 +35,8 @@ function getTheSubmissionData(ID, result, compiled, taskName){                  
 
 app.post('/submit', function(req, res) {
     var thisCode = req.body.code;
+    var username = req.body.username;
+    var password = req.body.password;
     var curNum = currentSubmissionNumber++;
     res.send({submissionNumer: curNum});
     grader.createFile(path.join(__dirname, 'database/codes/' + curNum + '.cpp'), thisCode).then( () => {
@@ -44,14 +46,37 @@ app.post('/submit', function(req, res) {
 
 app.post('/getResult', function(req, res) {
     var number = req.body.submissionID;
-    db.findIfSubExists(number).then((data) => {
-        if(!data) {                                                                                 // if such submission is not in the db
+    var username = req.body.username;
+    var password = req.body.password;
+    db.findIfUserExists(username, password).then((exists) => {
+        if(!exists){
             res.send({});
-        }else{
-            db.getSubResult(number).then((data) => {                                                // if submission is in the db, send it
-                res.send(data);
-            });
+            return ;
         }
+        db.findIfSubExists(number).then((data) => {
+            if(!data) {                                                                                 // if such submission is not in the db
+                res.send({});
+            }else{
+                db.getSubResult(number).then((data) => {                                                // if submission is in the db, send it
+                    res.send(data);
+                });
+            }
+        });
+    });
+
+});
+app.post('/getTaskData', function(req, res) {
+    var taskName = req.body.taskName;
+    var username = req.body.username;
+    var password = req.body.password;
+    db.findIfUserExists(username, password).then((exists) => {
+        if(!exists){
+            res.send({});
+            return ;
+        }
+        db.getTask(taskName).then((data) => {
+            res.send(data);
+        });
     });
 });
 
