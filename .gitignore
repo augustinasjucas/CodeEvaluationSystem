@@ -4,6 +4,9 @@ failas.cpp
 .gitignore
 client/node_modules
 .DS_Store
+
+server/dbPool.js
+
 # Logs
 logs
 *.log
