@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const dbPool = require('./dbPool.js');
 
 var submissions = [];                                                       // temporary. has:
 var users =[{username: 'insertUsername', password: 'insertHashedPassword'}];// temporary. has: username(string), password(string)
@@ -37,12 +38,22 @@ function getSubResult(index){                                               // r
         ////////
     });
 }
-function findIfUserExists(username, password){
+async function findIfUserExists(username, password){
+    
+    // console.log("Finding user, username: " + username + ' password: ' + password);
     return new Promise((resolve, reject) => {
-        //////// to be replaced with db
-        for(var i = 0; i < users.length; i++) if(users[i].username == username && users[i].password == password) resolve(true);
-        resolve(false);
-        ////////
+
+        
+        dbPool.query(
+            'SELECT * FROM users WHERE username=($1) AND password=($2)', 
+            [username, password],
+            (err, result) => {
+                if (err) reject();
+                const rows = result.rows;
+                if (rows.length == 0) resolve(false);
+                resolve(true);
+            }
+        );
     });
 }
 

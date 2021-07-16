@@ -8,7 +8,7 @@ const pool = new Pool({
     password: 'your-password',
     host: 'localhost',
     port: 5432,
-    database: 'codeEvaluationDB'
+    database: 'codeevaluationdb'
 });
 
 module.exports = pool;
