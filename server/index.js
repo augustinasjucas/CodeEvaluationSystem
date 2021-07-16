@@ -74,8 +74,14 @@ app.post('/getTaskData', function(req, res) {
             res.send({});
             return ;
         }
-        db.getTask(taskName).then((data) => {
-            res.send(data);
+        db.doesUserHavePermissionToTask(taskName, username).then((has) => {
+            if(!has){
+                res.send({});
+                return ;
+            }
+            db.getTask(taskName).then((data) => {
+                res.send(data);
+            });
         });
     });
 });
