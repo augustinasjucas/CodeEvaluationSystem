@@ -46,7 +46,7 @@ function findIfUserExists(username, password){
     });
 }
 
-function getTask(taskName){                                                         // this one is fully written, no need to change it
+function getTask(taskName){                                                         // gets task info from files
     return new Promise((resolve, reject) => {
         var pathToInfo = path.join(__dirname, 'tasks/' + taskName + '/info.json');
         var pathToStatement = path.join(__dirname, 'tasks/' + taskName + '/statement.txt');
@@ -72,6 +72,19 @@ function getTask(taskName){                                                     
         resolve(ret);
     });
 }
+function doesUserHavePermissionToTask(taskName, username){                          // finds out wether a user can access a task
+    return new Promise((resolve, reject) => {
+        var pathToInfo = path.join(__dirname, 'tasks/' + taskName + '/info.json');
+        if(fs.existsSync(pathToInfo)) {
+            var info = require(pathToInfo);
+            if(info.users.includes(username)) resolve(true);
+            else resolve(false);
+        }else{
+            resolve(false);
+        }
+    });
+}
+
 
 module.exports = {
     getLastSubmissionNumber,
@@ -79,6 +92,7 @@ module.exports = {
     findIfSubExists,
     getSubResult,
     findIfUserExists,
-    getTask
+    getTask,
+    doesUserHavePermissionToTask,
 
 }
