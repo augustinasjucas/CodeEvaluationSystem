@@ -71,6 +71,7 @@ app.post('/getTaskData', function(req, res) {
     var password = req.body.password;
     db.findIfUserExists(username, password).then((exists) => {
         if(!exists){
+            console.log('user does not exist!');
             res.send({});
             return ;
         }

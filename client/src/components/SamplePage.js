@@ -49,11 +49,15 @@ function SamplePage() {
         fetch('/getTaskData', requestOptions)                       // sends POST request to server with the code
             .then(response => response.json())                      // converts respinse to json
             .then((data) => {
+                if(!data.statement) return ;
                 data.statement += '\nLaiko limitas: ' + data.timeLimit + 'ms\nAtminties limitas: ' + data.memoryLimit + 'MB\n';
                 changeStatement(escapedNewLineToLineBreakTag(data.statement));
             });
     };
-    useEffect(() => {getTaskData('task-001')});
+    useEffect(() => {
+        console.log('asaaa');
+        getTaskData('task-001');
+    }, []);
     return (
         <div>
             <div>{statement}</div>

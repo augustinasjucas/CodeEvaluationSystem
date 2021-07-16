@@ -1,4 +1,4 @@
--- CREATE DATABASE codeevaluationdb;
+--CREATE DATABASE codeevaluationdb;
 
 CREATE TABLE users(
     id         SERIAL PRIMARY KEY,

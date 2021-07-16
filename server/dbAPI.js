@@ -39,13 +39,13 @@ function getSubResult(index){                                               // r
     });
 }
 async function findIfUserExists(username, password){
-    
+
     // console.log("Finding user, username: " + username + ' password: ' + password);
     return new Promise((resolve, reject) => {
 
-        
+        console.log('username: ' + username + ', password: ' + password);
         dbPool.query(
-            'SELECT * FROM users WHERE username=($1) AND password=($2)', 
+            'SELECT * FROM users WHERE username=($1) AND password=($2)',
             [username, password],
             (err, result) => {
                 if (err) reject();
