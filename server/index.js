@@ -63,7 +63,6 @@ app.post('/getResult', function(req, res) {
             }
         });
     });
-
 });
 app.post('/getTaskData', function(req, res) {
     var taskName = req.body.taskName;
@@ -86,7 +85,14 @@ app.post('/getTaskData', function(req, res) {
         });
     });
 });
+app.post('/login', function(req, res) {
+    var username = req.body.username;
+    var password = req.body.password;
+    db.findIfUserExists(username, password).then((exists) => {
+        res.send(exists);
+    });
 
+});
 
 /*
 // All other GET requests not handled before will return our React app. Uncomment this before deploying the WHOLE app.
