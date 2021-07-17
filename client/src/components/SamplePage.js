@@ -20,6 +20,8 @@ function SamplePage() {
         fetch('/getResult', requestOptions)                         // sends POST request to server with the code
             .then(response => response.json())                      // converts response to json
             .then((data) => {
+                console.log('received: ');
+                console.log(data);
                 if(data.result){
                     setTestResult(JSON.stringify(data.result));
                 }else{

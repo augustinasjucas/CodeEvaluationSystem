@@ -36,10 +36,6 @@ function getLastSubmissionNumber(){                                         // r
 
             }
         );
-
-        //////// to be replaced with db
-        //resolve(0);
-        ////////
     });
 }
 
@@ -102,15 +98,10 @@ function getSubResult(index){                                               // r
             (err, result) => {
                 if (err) reject();
                 const rows = result.rows;
-                console.log('getting sub result');
-                console.log(rows);
-                resolve(rows);
+                if(rows.length == 0) resolve({});
+                resolve(rows[0]);
             }
         );
-
-        //////// to be replaced with db
-        //resolve(submissions[index]);
-        ////////
     });
 }
 async function findIfUserExists(username, password){
