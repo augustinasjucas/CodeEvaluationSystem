@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import SamplePage from './components/SamplePage.js'
 import LoginPage from './components/LoginPage.js'
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
 import Cookies from 'universal-cookie';
 import Api from './api.js'
+import MainPage from './components/MainPage.js'
 
 function App() {
     const [cookies, changeCookies] = useState(new Cookies);
@@ -17,7 +17,6 @@ function App() {
     }
 
     if(loggedIn){                                                               // if logged in, return the page
-        console.log('logged in, loacl var: ' + loggedIn + ', cehck: ' + Api.checkIfLoggedIn(cookies));
         return (
             <Router>
                 <div className="App">
@@ -25,12 +24,8 @@ function App() {
                         <Route path="/login">
                             <Redirect to="/" />
                         </Route>
-                        <Route path="/sample">
-                            <SamplePage />
-                        </Route>
                         <Route path="/">
-                            <div>Logged in!</div>
-                            <button onClick={logOut}>Log out</button>
+                            <MainPage Cookies={cookies} logOut={logOut}/>
                         </Route>
                     </Switch>
                 </div>
@@ -42,7 +37,6 @@ function App() {
                 <div className="App">
                     <Switch>
                         <Route path="/login">
-
                             <LoginPage changeLoggedIn={changeLoggedIn} />
                         </Route>
                         <Route path="/">

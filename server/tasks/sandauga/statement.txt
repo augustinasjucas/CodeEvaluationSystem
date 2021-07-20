@@ -1,0 +1,11 @@
+Sąlyga:
+Duoti du skaičiai A ir B. Išveskite jų sandaugą!
+
+Įvestis:
+Pirmoje ir vienintelėje eilutėje pateikti du skaičiai A ir B, atskirti tarpu.
+
+Išvestis:
+Išveskite vieną skaičių - atsakymą.
+
+Ribojimai:
+A, B <= 10^9

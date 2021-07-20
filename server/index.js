@@ -85,13 +85,26 @@ app.post('/getTaskData', function(req, res) {
         });
     });
 });
+app.post('/getUserTasks', function(req, res) {
+    var username = req.body.username;
+    var password = req.body.password;
+    db.findIfUserExists(username, password).then((exists) => {
+        if(!exists){
+            res.send([]);
+            return ;
+        }
+        db.findAllTasksOfUser(username).then((tasks) => {
+            res.send(tasks);
+        });
+
+    });
+});
 app.post('/login', function(req, res) {
     var username = req.body.username;
     var password = req.body.password;
     db.findIfUserExists(username, password).then((exists) => {
         res.send(exists);
     });
-
 });
 
 /*

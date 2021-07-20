@@ -162,7 +162,24 @@ function doesUserHavePermissionToTask(taskName, username){                      
     });
 }
 
+async function findAllTasksOfUser(username){
+    const getDirectories = fs.readdirSync(path.join(__dirname, 'tasks'), { withFileTypes: true })
+        .filter(dirent => dirent.isDirectory())
+        .map(dirent => dirent.name)
+    var ret = [];
+    for(var i = 0; i < getDirectories.length; i++){
+        var has, task;
+        await doesUserHavePermissionToTask(getDirectories[i], username).then((data) => {has = data; });
+        await getTask(getDirectories[i]).then((data) => {task = data.name});
+        if(has){
+            ret.push({id: getDirectories[i], name: task});
+        }
 
+    }
+    return new Promise((resolve, reject) => {
+        resolve(ret);
+    });
+}
 module.exports = {
     getLastSubmissionNumber,
     addSubmission,
@@ -171,5 +188,5 @@ module.exports = {
     findIfUserExists,
     getTask,
     doesUserHavePermissionToTask,
-
+    findAllTasksOfUser,
 }
