@@ -8,10 +8,11 @@ const LoginPage = (props) => {
         return val;
     }
 
+    // stores what is in the input field:
     const [username, changeUsername] = useState('');
     const [password, changePassword] = useState('');
+
     const [cookies, changeCookies] = useState(new Cookies);
-    //const cookies = new Cookies();
 
     const handleUsernameChange = (e) => {
         changeUsername(e.target.value);
@@ -19,13 +20,15 @@ const LoginPage = (props) => {
     const handlePasswordChange = (e) => {
         changePassword(e.target.value);
     };
+
+    // when logging in, checks if user exists
     const onLogin = (username, password) => {
         Api.checkIfUserExists(username, password).then((exists) => {
             if(exists){
                 cookies.set('loggedIn', true, { path: '/' });
                 cookies.set('username', username, { path: '/' });
                 cookies.set('password', password, { path: '/' });
-                props.changeLoggedIn(true);                                     // changes state, to redirect
+                props.changeLoggedIn(true);
             }else{
                 alert('does not exist!');                                       // TODO: change this!
             }

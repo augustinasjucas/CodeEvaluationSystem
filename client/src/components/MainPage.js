@@ -6,9 +6,13 @@ import TaskDisplay from './TaskDisplay.js'
 const MainPage = (props) => {
     const [taskNames, changeTaskNames] = useState([]);  //
     const [currentTask, changeCurrentTask] = useState('');
+
+    // downloads all tasknames of this user once.                                                                        
     useEffect(() => {
         Api.getAllTaskNames(props.Cookies).then((data) => changeTaskNames(data));
     }, []);
+
+    // changes the task that is currently on the screen
     const chooseTask = (task) => {
         changeCurrentTask(task.id);
     };

@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import LoginPage from './components/LoginPage.js'
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
 import Cookies from 'universal-cookie';
 import Api from './api.js'
 import MainPage from './components/MainPage.js'
+import ViewSubmission from './components/ViewSubmission.js'
 
 function App() {
-    const [cookies, changeCookies] = useState(new Cookies);
+    const [cookies ] = useState(new Cookies);
     const [loggedIn, changeLoggedIn] = useState(Api.checkIfLoggedIn(cookies));
 
     const logOut = () => {
@@ -21,6 +22,9 @@ function App() {
             <Router>
                 <div className="App">
                     <Switch>
+                        <Route path="/submission/:id">
+                            <ViewSubmission Cookies={cookies} />
+                        </Route>
                         <Route path="/login">
                             <Redirect to="/" />
                         </Route>

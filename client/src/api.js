@@ -72,11 +72,11 @@ class Api {
         });
     };
 
-    static submitCode(code, username, password) {
+    static submitCode(code, task, username, password) {
         const requestOptions = {                                    // creating the request
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({code: code, username: username, password: password})
+            body: JSON.stringify({code: code, taskName: task, username: username, password: password})
         };
         return new Promise ( (resolve, reject) => {
             fetch('/submit', requestOptions)                            // sends POST request to server with the code
@@ -86,5 +86,19 @@ class Api {
                 });
         });
     };
+    static getSubmissionData(id, username, password){
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({submissionID: id, username: username, password: password})
+        };
+        return new Promise ( (resolve, reject) => {
+            fetch('/getResult', requestOptions)
+                .then(response => response.json())
+                .then((data) => {
+                    resolve(data);
+                });
+        });
+    }
 }
 export default Api;

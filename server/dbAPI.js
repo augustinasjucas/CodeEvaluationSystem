@@ -104,12 +104,13 @@ function getSubResult(index){                                               // r
         );
     });
 }
+
 async function findIfUserExists(username, password){
 
     // console.log("Finding user, username: " + username + ' password: ' + password);
     return new Promise((resolve, reject) => {
 
-        console.log('username: ' + username + ', password: ' + password);
+        console.log('query from ' + username);
         dbPool.query(
             'SELECT * FROM users WHERE username=($1) AND password=($2)',
             [username, password],
@@ -161,6 +162,16 @@ function doesUserHavePermissionToTask(taskName, username){                      
         }
     });
 }
+function doesTaskExists(taskName){
+    return new Promise((resolve, reject) => {
+        var pathToInfo = path.join(__dirname, 'tasks/' + taskName + '/info.json');
+        if(fs.existsSync(pathToInfo)) {
+            resolve(true);
+        }else{
+            resolve(false);
+        }
+    });
+}
 
 async function findAllTasksOfUser(username){
     const getDirectories = fs.readdirSync(path.join(__dirname, 'tasks'), { withFileTypes: true })
@@ -189,4 +200,5 @@ module.exports = {
     getTask,
     doesUserHavePermissionToTask,
     findAllTasksOfUser,
+    doesTaskExists
 }

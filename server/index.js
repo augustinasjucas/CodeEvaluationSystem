@@ -9,6 +9,7 @@ const app = express();
 const bodyParser = require('body-parser');                                                          // For POST requests
 const grader = require('./grader.js');
 const db = require('./dbAPI.js');
+const fs = require('fs');
 
 var submissions = [];                                                                               // just for now, since no DB is present
 var currentSubmissionNumber; db.getLastSubmissionNumber().then(data => currentSubmissionNumber = data + 1);
@@ -37,10 +38,17 @@ app.post('/submit', function(req, res) {
     var thisCode = req.body.code;
     var username = req.body.username;
     var password = req.body.password;
-    var curNum = currentSubmissionNumber++;
-    res.send({submissionNumer: curNum});
-    grader.createFile(path.join(__dirname, 'database/codes/' + curNum + '.cpp'), thisCode).then( () => {
-        grader.runCode(thisCode, 'task-001', curNum, getTheSubmissionData);
+    var taskName = req.body.taskName;
+    db.doesTaskExists(taskName).then((exists) => {
+        if(!exists) {
+            res.send({});
+            return ;
+        }
+        var curNum = currentSubmissionNumber++;
+        res.send({submissionNumer: curNum});
+        grader.createFile(path.join(__dirname, 'database/codes/' + curNum + '.cpp'), thisCode).then( () => {
+            grader.runCode(thisCode, taskName, curNum, getTheSubmissionData);
+        });
     });
 });
 
@@ -54,11 +62,18 @@ app.post('/getResult', function(req, res) {
             return ;
         }
         db.findIfSubExists(number).then((data) => {
-            if(!data) {                                                                                 // if such submission is not in the db
+            if(!data) {
                 res.send({});
             }else{
-                db.getSubResult(number).then((data) => {                                                // if submission is in the db, send it
-                    res.send(data);
+                db.getSubResult(number).then((data) => {
+                    fs.readFile(data.codepath, 'utf-8', (err, code) => {
+                        if (err) {
+                            res.send({});
+                        }else{
+                            var ret = {taskname: data.taskname, compiled: data.compiled, result: data.result, code: code};
+                            res.send(ret);
+                        }
+                    });
                 });
             }
         });
@@ -107,6 +122,7 @@ app.post('/login', function(req, res) {
     });
 });
 
+
 /*
 // All other GET requests not handled before will return our React app. Uncomment this before deploying the WHOLE app.
 app.get('*', (req, res) => {
@@ -115,5 +131,5 @@ app.get('*', (req, res) => {
 */
 
 app.listen(PORT, () => {
-  console.log(`Server listening on ${PORT}`);
+  console.log('Server listening on ${PORT}');
 });

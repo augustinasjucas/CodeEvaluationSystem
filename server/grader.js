@@ -120,6 +120,10 @@ async function runTest(inputPath, execPath, timeLimit, memoryLimit){            
     var outputName = path.join(__dirname, '/submissionsFolder/outputOf' + curNum + '.out');
 
     await executeCommand('cat ' + inputPath + ' | time ' + execPath + ' > ' + outputName, timeLimit, memoryLimit).then((data) => {    // then excetute the code with this input
+        // fs.readFile(outputName, 'utf-8', (err, data) => {
+        //     console.log('runs test ' + inputPath + ', result is ' + data);
+        // });
+
         ret.error = data.error;                                                                     // and set the return data to the executed data
         ret.stdout = outputName;
         ret.stderr = data.stderr;
