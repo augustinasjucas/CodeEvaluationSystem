@@ -1,7 +1,7 @@
 {
     "name": "Suma",
     "time_limit": 10000,
-    "subtasks": [{"points": 1, "tests": ["001", "002", "003", "004", "005", "006"]}],
+    "subtasks": [{"points": 1, "tests": [0, 1, 2, 3, 4, 5]}],
     "tests": 11,
     "memory_limit": 10,
     "users": ["insertUsername"]

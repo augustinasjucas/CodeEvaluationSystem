@@ -39,41 +39,54 @@ function getLastSubmissionNumber(){                                         // r
     });
 }
 
-function addSubmission(index, compiled, result, codePath, taskName){        // index - the number of the submission
+function addSubmission(index, compiled, result, codePath, taskName, username, score){ // index - the number of the submission
                                                                             // compiled - true/false
                                                                             // result - error message if not compiled, array of test results else
                                                                             // codePath - path to the code
                                                                             // taskName - the shortname to the task
-    //////// to be replaced db
-    submissions[index] = {compiled: compiled, result: result, codePath: codePath, taskName: taskName};
-    //console.log('add submisssion, submission: ');
-    //console.log(submissions[index]);
-
-   // console.log('inserting, add submission');
-
+                                                                            // username - person, who submitted
+                                                                            // score - score for this subtask
    // TODO: also add user id ; do not add index (make it auto increment)
-    dbPool.query(
-        `INSERT INTO submissions (index, compiled, result, codepath, taskname)
-         VALUES ($1, $2, $3, $4, $5)`,
-        [index, compiled, JSON.stringify(result), codePath, taskName],
+   const pth = path.join(__dirname, './tasks/' + taskName + '/info.json');                         // path to info.json
+   const info = require(pth);
+   const nameOfTheTask = info.name;
+   dbPool.query(
+        `INSERT INTO submissions (index, compiled, result, codepath, taskname, username, score)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [index, compiled, JSON.stringify(result), codePath, taskName, username, score],
         (err, result) => {
             if (err) {
-                console.log("error occured: ");
+                console.log("DB error occured: ");
                 console.log(err);
-             //   reject();
             }
-           // console.log("inserted");
-            const rows = result.rows;
-            //console.log("rows: ");
-            //console.log(rows);
-            // const rows = result.rows;
-            // if (rows.length == 0) resolve(false);
-            // resolve(true);
         }
     );
-
-    ////////
-
+    var tableName = 'user_submissions_' + username;
+    dbPool.query(
+        `INSERT INTO ` + tableName + ` (index, task, score, name)
+         VALUES ($1, $2, $3, $4)`,
+        [index, taskName, score, nameOfTheTask],
+        (err, result) => {
+            if (err) {
+                console.log("DB error occured: ");
+                console.log(err);
+            }
+        }
+    );
+}
+function findSubmissions(username, task){
+    return new Promise((resolve, reject) => {
+        var tableName = 'user_submissions_' + username;
+        dbPool.query(
+            'SELECT * FROM ' + tableName + ' WHERE task=($1)',
+            [task],
+            (err, result) => {
+                if (err) reject();
+                const rows = result.rows;
+                resolve(rows);
+            }
+        );
+    });
 }
 function findIfSubExists(index){                                            // finds whether submission `index` is in DB and returns true/false
     return new Promise((resolve, reject) => {
@@ -200,5 +213,6 @@ module.exports = {
     getTask,
     doesUserHavePermissionToTask,
     findAllTasksOfUser,
-    doesTaskExists
+    doesTaskExists,
+    findSubmissions
 }

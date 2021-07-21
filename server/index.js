@@ -24,10 +24,10 @@ console.log('currentSubmissionNumber = ' + currentSubmissionNumber);
 app.use(express.static(path.resolve(__dirname, '../client/build')));
 */
 
-function getTheSubmissionData(ID, result, compiled, taskName){                                      // gets the submission data of `ID` submission
+function getTheSubmissionData(ID, result, compiled, taskName, username){                            // gets the submission data of `ID` submission
                                                                                                     // and writes it to the DB
     var pathToCpp = path.join(__dirname, 'database/codes/' + ID + '.cpp');
-    db.addSubmission(ID, compiled, result, pathToCpp, taskName);
+    db.addSubmission(ID, compiled, result, pathToCpp, taskName, username, grader.evaluateSubtasks(compiled, result, taskName));
     console.log('evaluated the submission ' + ID + ': ');
     console.log(result);
     console.log('-----');
@@ -39,18 +39,58 @@ app.post('/submit', function(req, res) {
     var username = req.body.username;
     var password = req.body.password;
     var taskName = req.body.taskName;
-    db.doesTaskExists(taskName).then((exists) => {
+    db.findIfUserExists(username, password).then((exists) => {
         if(!exists) {
             res.send({});
             return ;
         }
-        var curNum = currentSubmissionNumber++;
-        res.send({submissionNumer: curNum});
-        grader.createFile(path.join(__dirname, 'database/codes/' + curNum + '.cpp'), thisCode).then( () => {
-            grader.runCode(thisCode, taskName, curNum, getTheSubmissionData);
+        db.doesTaskExists(taskName).then((exists) => {
+            if(!exists) {
+                res.send({});
+                return ;
+            }
+            db.doesUserHavePermissionToTask(taskName, username).then((has) => {
+                if(!has){
+                    res.send({});
+                    return ;
+                }
+                var curNum = currentSubmissionNumber++;
+                res.send({submissionNumer: curNum});
+                grader.createFile(path.join(__dirname, 'database/codes/' + curNum + '.cpp'), thisCode).then( () => {
+                    grader.runCode(thisCode, taskName, curNum, username, getTheSubmissionData);
+                });
+            });
         });
     });
 });
+
+app.post('/getSubmissions', function(req, res) {
+    var username = req.body.username;
+    var password = req.body.password;
+    var taskName = req.body.taskName;
+    db.findIfUserExists(username, password).then((exists) => {
+        if(!exists) {
+            res.send([]);
+            return ;
+        }
+        db.doesTaskExists(taskName).then((exists) => {
+            if(!exists) {
+                res.send([]);
+                return ;
+            }
+            db.doesUserHavePermissionToTask(taskName, username).then((has) => {
+                if(!has){
+                    res.send([]);
+                    return ;
+                }
+                db.findSubmissions(username, taskName).then((data) => {
+                    res.send(data);
+                });
+            });
+        });
+    });
+});
+
 
 app.post('/getResult', function(req, res) {
     var number = req.body.submissionID;

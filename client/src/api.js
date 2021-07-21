@@ -100,5 +100,20 @@ class Api {
                 });
         });
     }
+    static getSubmissions(task, username, password){
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({username: username, password: password, taskName: task})
+        };
+        return new Promise ( (resolve, reject) => {
+            fetch('/getSubmissions', requestOptions)
+                .then(response => response.json())
+                .then((data) => {
+                    resolve(data);
+                });
+        });
+    }
+
 }
 export default Api;

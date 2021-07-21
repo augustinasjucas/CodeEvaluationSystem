@@ -8,16 +8,34 @@ var usedMemory = 0;
 var submissions = [];
 var currentSubmissionNumber = 0;
 
+function evaluateSubtasks(compiled, result, taskName){
+    if(!compiled) return 0.0;
+    const pth = path.join(__dirname, './tasks/' + taskName + '/info.json');                         // path to info.json
+    const info = require(pth);
+    const subtasks = info.subtasks;
+    var sum = 0;
+    var total = 0;
+    for(var i = 0; i < subtasks.length; i++){
+        var th = subtasks[i].points;
+        total += th;
+        for(var j = 0; j < subtasks[i].tests.length; j++){
+            if(result[subtasks[i].tests[j] + 1].points == 0) th = 0;
+        }
+        sum += th;
+    }
+    return sum / total * 100;
+}
+
 function createEmptySubmission(numOfTests, ID){                                                                   // creates empty submission (in database) and returns its ID
     submissions[ID] = {tests: [], compiled: true, testCount: numOfTests, compilationError: null};
 }
 
-function addOneTestToSubmission(ID, testIndex, val, codePath, execPath, taskName, returnVerdict){                             // adds the result of one test to the DB
+function addOneTestToSubmission(ID, testIndex, val, codePath, execPath, taskName, returnVerdict, username){                             // adds the result of one test to the DB
     submissions[ID].tests[testIndex] = val;
     submissions[ID].testCount--;
     if(submissions[ID].testCount == 0) {
         removeFile(codePath).then(() => {removeFile(execPath).then(() => {                            // before returning, removes .cpp and executable files.
-            returnVerdict(ID, submissions[ID].tests, true, taskName);
+            returnVerdict(ID, submissions[ID].tests, true, taskName, username);
         })});
 
     }
@@ -85,29 +103,29 @@ function checkQueue(){
             if(data.error){
                 removeFile(ths.codePath).then(() => {                                               // before returning, removes .cpp file
                     setSubmissionAsUncompiled(ths.id, data.error);
-                    ths.returnVerdict(ths.id, data.error, false, ths.taskName);
+                    ths.returnVerdict(ths.id, data.error, false, ths.taskName, ths.username);
                 });
             }else{
-                compiled(ths.taskInfo, ths.id, ths.execPath, ths.codePath, ths.taskName, ths.returnVerdict);
+                compiled(ths.taskInfo, ths.id, ths.execPath, ths.codePath, ths.taskName, ths.returnVerdict, ths.username);
             }
         });
     }else if(ths.type == 'test'){                                                                   // if its a test, runs it
         runTest(ths.inpPath, ths.execPath, ths.time, ths.memory).then((data) => {
             extractResult(data, ths.outPath).then((final) => {
-                addOneTestToSubmission(ths.id, ths.testNum, final, ths.codePath, ths.execPath, ths.taskName, ths.returnVerdict);
+                addOneTestToSubmission(ths.id, ths.testNum, final, ths.codePath, ths.execPath, ths.taskName, ths.returnVerdict, ths.username);
                 usedMemory -= ths.memory * 1024 * 1024;
             });
         });
     }
 }
 setInterval(checkQueue, 50);                                                                        // checks the queue every 50ms
-function compiled(info, ID, execPath, codePath, taskName, returnVerdict){
+function compiled(info, ID, execPath, codePath, taskName, returnVerdict, username){
 
     for(var i = 1; i <= info.tests; i++){                                                           // loops through the tests
         const inpPath = path.join(__dirname, '/tasks/' + taskName + '/tests/input/' + i + '.in');
         const outPath = path.join(__dirname, '/tasks/' + taskName + '/tests/output/' + i + '.out');
         if(!fileExists(inpPath) || !fileExists(outPath)) return ["Wrong test data!"];               // this shouldn't ever happen!
-        queue.push({outPath: outPath, inpPath: inpPath, execPath: execPath, codePath: codePath, time: info.time_limit, memory: info.memory_limit, id: ID, testNum: i, taskName: taskName, returnVerdict: returnVerdict, type: 'test'});
+        queue.push({outPath: outPath, inpPath: inpPath, execPath: execPath, codePath: codePath, time: info.time_limit, memory: info.memory_limit, id: ID, testNum: i, taskName: taskName, returnVerdict: returnVerdict, type: 'test', username: username});
     }
 }
 
@@ -175,7 +193,7 @@ async function extractResult(test, correctOutput){                              
     });
 }
 
-async function runCode(code, taskName, ID, returnVerdict){
+async function runCode(code, taskName, ID, username, returnVerdict){
 
     const pth = path.join(__dirname, './tasks/' + taskName + '/info.json');                         // path to info.json
     if(!fileExists(pth)) return ["The task doesn't exist!"];                                        // if it doesnt exist (this should never happen!)
@@ -189,11 +207,12 @@ async function runCode(code, taskName, ID, returnVerdict){
     await createFile(codePath, code);                                                               // creates the cpp file
 
     var compilationCommand = 'g++ -DEVAL -O3 -fsanitize=undefined -std=c++17 -o ' + execPath + ' ' + codePath;
-    queue.push({command: compilationCommand, time: 10000, memory: 500, type: 'compilation', after: compiled, taskInfo: info, id: ID, execPath: execPath, codePath: codePath, taskName: taskName, returnVerdict: returnVerdict});
+    queue.push({command: compilationCommand, time: 10000, memory: 500, type: 'compilation', after: compiled, taskInfo: info, id: ID, execPath: execPath, codePath: codePath, taskName: taskName, username: username, returnVerdict: returnVerdict});
 }
 
 
 module.exports = {
     runCode,
-    createFile
+    createFile,
+    evaluateSubtasks
 }
