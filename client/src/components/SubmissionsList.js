@@ -7,9 +7,7 @@ const SubmissionsList = (props) => {
     const [submissions, changeSubmissions] = useState([]);
     const getSubmissions = (username, password, taskName) => {
         Api.getSubmissions(taskName, username, password).then((data) => {
-            console.log('it is now ');
-            console.log(data);
-            changeSubmissions(data.reverse());
+            changeSubmissions(data.sort((a, b) => {return a.index < b.index}));
         });
     };
 
@@ -27,7 +25,6 @@ const SubmissionsList = (props) => {
             });
         }
     });
-    console.log(submissions);
 
     var ret = submissions.map(sub => (<OneSubmissionResult key={sub.index} Submission={sub}/>));
     return (

@@ -18,7 +18,6 @@ class Api {
         return ret;
     };
     static checkIfLoggedIn(cookies){
-        //console.log('checkinam, ar prisijungta:')
         if(!cookies.get('loggedIn')) return false;
         return cookies.get('loggedIn') == 'true';
     }
@@ -37,8 +36,6 @@ class Api {
                 .then((data) => {
                     ret = data;
                     resolve(ret);
-                    console.log('ret: ');
-                    console.log(ret);
                 });
         });
     }
@@ -96,6 +93,8 @@ class Api {
             fetch('/getResult', requestOptions)
                 .then(response => response.json())
                 .then((data) => {
+                    console.log('THE PRIMARY DATA IS: ');
+                    console.log(data.result);
                     resolve(data);
                 });
         });

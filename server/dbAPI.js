@@ -50,29 +50,39 @@ function addSubmission(index, compiled, result, codePath, taskName, username, sc
    const pth = path.join(__dirname, './tasks/' + taskName + '/info.json');                         // path to info.json
    const info = require(pth);
    const nameOfTheTask = info.name;
-   dbPool.query(
-        `INSERT INTO submissions (index, compiled, result, codepath, taskname, username, score)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-        [index, compiled, JSON.stringify(result), codePath, taskName, username, score],
-        (err, result) => {
-            if (err) {
-                console.log("DB error occured: ");
-                console.log(err);
+   dbPool.query('DELETE FROM submissions WHERE index=' + index + ';', (err, rs) => {
+       if(err){
+           console.log('DB error occured: ');
+           console.log(err);
+       }
+       dbPool.query(
+            `INSERT INTO submissions (index, compiled, result, codepath, taskname, username, score)
+             VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+            [index, compiled, JSON.stringify(result), codePath, taskName, username, score],
+            (err, result) => {
+                if (err) {
+                    console.log("DB error occured: ");
+                    console.log(err);
+                }
             }
-        }
-    );
+        );
+   });
+
     var tableName = 'user_submissions_' + username;
-    dbPool.query(
-        `INSERT INTO ` + tableName + ` (index, task, score, name)
-         VALUES ($1, $2, $3, $4)`,
-        [index, taskName, score, nameOfTheTask],
-        (err, result) => {
-            if (err) {
-                console.log("DB error occured: ");
-                console.log(err);
+    dbPool.query('DELETE FROM ' + tableName + ' WHERE index=' + index + ';', (err, rs) => {
+        dbPool.query(
+            `INSERT INTO ` + tableName + ` (index, task, score, name)
+             VALUES ($1, $2, $3, $4)`,
+            [index, taskName, score, nameOfTheTask],
+            (err, result) => {
+                if (err) {
+                    console.log("DB error occured: ");
+                    console.log(err);
+                }
             }
-        }
-    );
+        );
+    });
+
 }
 function findSubmissions(username, task){
     return new Promise((resolve, reject) => {

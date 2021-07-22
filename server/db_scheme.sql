@@ -15,6 +15,7 @@ CREATE TABLE users(
 
 INSERT INTO users (username, password)
     VALUES ('insertUsername', 'insertHashedPassword');  -- temporary user 1
+INSERT INTO users (username, password)
     VALUES ('admin', 'admin');                          -- temporary user 2
 
 CREATE TABLE submissions(

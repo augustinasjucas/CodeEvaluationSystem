@@ -1,7 +1,6 @@
 import React from 'react';
 
 const OneTestResult = (props) => {
-    console.log(props.Test);
     return (
         <div>
             <tr style={{border: "1px solid black"}}>

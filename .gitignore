@@ -4,7 +4,8 @@ failas.cpp
 .gitignore
 client/node_modules
 .DS_Store
-
+server/tasks/vagys
+server/tasks/robotai
 server/dbPool.js
 
 # Logs

@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom';
 import TestViewer from './TestViewer.js'
 import { CopyBlock, atomOneDark } from "react-code-blocks";
 const ViewSubmission = (props) => {
-    console.log('view submission!');
     const [submissionOnScreen, changeSubmissionOnScreen] = useState(-1);
     const [result, changeResult] = useState({});
 
@@ -16,8 +15,6 @@ const ViewSubmission = (props) => {
         var username = (props.Cookies.get('username') ? props.Cookies.get('username') : '');
         var password = (props.Cookies.get('password') ? props.Cookies.get('password') : '');
         Api.getSubmissionData(id, username, password).then((data) => {
-            console.log('data: ');
-            console.log(data);
             changeResult(data);
         });
     };
@@ -29,7 +26,6 @@ const ViewSubmission = (props) => {
         changeSubmissionOnScreen(id);
         loadData(id);
     });
-    console.log(result);
     if(Object.keys(result).length == 0){
         return (
             <div>

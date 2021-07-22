@@ -18,24 +18,18 @@ const TaskDisplay = (props) => {
     }
 
     // asks if submission was evaluated every 200s
-    const checkForResult = (index) => {
-        var username = (props.Cookies.get('username') ? props.Cookies.get('username') : '');
-        var password = (props.Cookies.get('password') ? props.Cookies.get('password') : '');
-        Api.checkForResult(index, username, password).then((data) => {
-            if(data.result){
-                setTestResult(JSON.stringify(data));
-            }else{
-                setTimeout(checkForResult, 200, index);
-            }
-        });
+    const checkForResult = () => {
+        changeHaveToUpdateSubmissions(true);
     };
+    useEffect(() => {
+        setInterval(checkForResult, 3000);                                      // TODO: change this (probably)
+    }, []);
 
     // submits code and starts checking for evaluation
     const onSubmitOfCode = (code) => {
         var username = (props.Cookies.get('username') ? props.Cookies.get('username') : '');
         var password = (props.Cookies.get('password') ? props.Cookies.get('password') : '');
         Api.submitCode(code, currentTaskOnScreen, username, password).then((data) => {
-            setTimeout(checkForResult, 200, data.submissionNumer);
         });
     };
 

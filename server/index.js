@@ -56,6 +56,7 @@ app.post('/submit', function(req, res) {
                 }
                 var curNum = currentSubmissionNumber++;
                 res.send({submissionNumer: curNum});
+                db.addSubmission(curNum, false, [], '', taskName, username, -1);
                 grader.createFile(path.join(__dirname, 'database/codes/' + curNum + '.cpp'), thisCode).then( () => {
                     grader.runCode(thisCode, taskName, curNum, username, getTheSubmissionData);
                 });
@@ -106,11 +107,20 @@ app.post('/getResult', function(req, res) {
                 res.send({});
             }else{
                 db.getSubResult(number).then((data) => {
+                    if(data.codepath == '') {
+                        res.send({});
+                        return ;
+                    }
                     fs.readFile(data.codepath, 'utf-8', (err, code) => {
                         if (err) {
                             res.send({});
                         }else{
                             var ret = {taskname: data.taskname, compiled: data.compiled, result: data.result, code: code};
+                            // FOR SOME AWFUL REASON, THE FRONTEND RECEIVES THE SAME ARRAY EXCEPT THE FIRST TO ELEMENTS ARE MISSING
+                            // SO I INSERT ONE MORE null ELEMENT IN FROM OF THE ARRAY. I DO NOT KNOW WHY THIS IS THE CASE AND HOW TO
+                            // FIX IT IN A NORMAL WAY!
+                            // TODO: fix this!!
+                            if(Array.isArray(ret.result)) ret.result.splice(0, 0, null);
                             res.send(ret);
                         }
                     });
@@ -125,7 +135,6 @@ app.post('/getTaskData', function(req, res) {
     var password = req.body.password;
     db.findIfUserExists(username, password).then((exists) => {
         if(!exists){
-            console.log('user does not exist!');
             res.send({});
             return ;
         }
