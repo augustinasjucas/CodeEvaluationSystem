@@ -25,7 +25,8 @@ CREATE TABLE submissions(
     codepath   VARCHAR(100) NOT NULL,
     taskname   VARCHAR(100) NOT NULL,
     username   VARCHAR(100) NOT NULL,
-    score      real
+    score      real,
+    subtasks   json NOT NULL
 );
 
 CREATE TABLE user_submissions_insertUsername(

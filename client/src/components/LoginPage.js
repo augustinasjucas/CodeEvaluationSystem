@@ -37,12 +37,18 @@ const LoginPage = (props) => {
     const submit = () => {
         onLogin(username, hash(password));
     };
+    /*
+        Username: insertUsername, password: insertHashedPassword; <br />
+        Username: admin, password: admin <br />
+    */
     return (
-        <div className="LoginPage">
-            Login page! Submit page is in /sample. Username: insertUsername, password: insertHashedPassword<br /><br />
-            <input type="text" placeholder="Username" onChange={handleUsernameChange} /> <br />
-            <input type="password" placeholder="Password" onChange={handlePasswordChange} /> <br />
-            <button onClick={submit}>Submit!</button>
+        <div className="loginPage">
+            <div className="loginHolder">
+                <h2>Login page</h2>
+                <input className="loginField" type="text" placeholder="Username" onChange={handleUsernameChange} /> <br />
+                <input className="loginField" type="password" placeholder="Password" onChange={handlePasswordChange} /> <br />
+                <button className="loginSubmitButton" onClick={submit}>Submit!</button>
+            </div>
         </div>
       );
 }

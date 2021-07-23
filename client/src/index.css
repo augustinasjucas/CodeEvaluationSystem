@@ -11,3 +11,110 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+
+
+
+/* Menu */
+.logoutButton{
+    color: black;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.menuTable{
+    width: 100%;
+}
+.menuTable td{
+    border-radius: 5px;
+    border: 1px solid black;
+    background-color: silver;
+    padding: 0.3%;
+}
+.menuLogout{
+    text-align: center;
+}
+.menuRow{
+    height: 100%;
+    width: 100%;
+}
+.menuHome{
+
+    text-align: center;
+    width: 10%;
+}
+.menuMiddleSpace{
+    width: 70%;
+    text-align: center;
+}
+.menuUsername{
+    text-align: center;
+    width: 10%;
+}
+.menuLogout{
+    width: 10%;
+}
+.logoutButton{
+    width: auto;
+    margin: auto;
+}
+.homeLinkWord{
+    color: black;
+}
+
+
+
+
+
+/* login page */
+.loginPage{
+    text-align: center;
+}
+.loginHolder{
+    margin: auto;
+}
+.loginField, .loginSubmitButton{
+    margin: 0.5%;
+    width: 20%;
+    text-align: center;
+    padding: 1%;
+    border-radius: 5px;
+    border: 1px solid black;
+}
+.loginSubmitButton{
+    background-color: silver;
+}
+
+/*  task list */
+.taskListTable{
+    width: 40%;
+    margin: 3% auto;
+}
+.homePageDiv{
+    align-items: center;
+}
+.oneTaskSelectorCol{
+    text-align: center;
+    padding: 1%;
+    margin: 2%;
+    border-radius: 5px;
+    border: 1px solid black;
+}
+.oneTaskSelectorRow {
+    padding: 1%;
+}
+
+.oneTaskSelectorRow a{
+    color: black;
+}
+.subtasksStatmentTable{
+    border: 1px solid black;
+}
+.sampleInATask{
+    border: 1px solid black;
+}
+
+.sampleInATask td, .sampleInATask th{
+    border: 1px solid black;
+}

@@ -94,7 +94,7 @@ class Api {
                 .then(response => response.json())
                 .then((data) => {
                     console.log('THE PRIMARY DATA IS: ');
-                    console.log(data.result);
+                    console.log(data);
                     resolve(data);
                 });
         });

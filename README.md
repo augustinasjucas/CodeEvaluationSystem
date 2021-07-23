@@ -1,5 +1,7 @@
 # SistemaAA
 
+A sample statement is SAMPLE_STATEMENT.txt
+
 To download all the node_modules:
 `
 npm install && cd client && npm install && npm run build

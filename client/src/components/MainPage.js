@@ -2,26 +2,24 @@ import React, { useState, useEffect } from 'react';
 import Api from '../api.js'
 import TaskSelector from './TaskSelector.js'
 import TaskDisplay from './TaskDisplay.js'
+import { useParams } from 'react-router-dom';
+import Menu from './Menu.js'
 
 const MainPage = (props) => {
-    const [taskNames, changeTaskNames] = useState([]);  //
     const [currentTask, changeCurrentTask] = useState('');
-
-    // downloads all tasknames of this user once.                                                                        
-    useEffect(() => {
-        Api.getAllTaskNames(props.Cookies).then((data) => changeTaskNames(data));
-    }, []);
+    var { taskName } = useParams();
+    // downloads all tasknames of this user once.
 
     // changes the task that is currently on the screen
-    const chooseTask = (task) => {
-        changeCurrentTask(task.id);
-    };
+    useEffect(() => {
+        console.log(taskName);
+        if(taskName && currentTask != taskName){
+            changeCurrentTask(taskName);
+        }
+    });
     return (
-        <div>
-            <div>Logged in!</div>
-            <button onClick={props.logOut}>Log out</button>
-            <br />
-            <TaskSelector TaskNames={taskNames} ChooseTask={chooseTask} />
+        <div className="mainPageDiv">
+            <Menu Username={props.Cookies.get('username')} Logout={props.logOut} />
             <TaskDisplay Cookies={props.Cookies} TaskName={currentTask} />
         </div>
     );

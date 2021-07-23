@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Api from '../api.js'
 import { useParams } from 'react-router-dom';
 import TestViewer from './TestViewer.js'
-import { CopyBlock, atomOneDark } from "react-code-blocks";
+import { CopyBlock, atomOneLight as theme } from "react-code-blocks";
+import SubtasksViewer from './SubtasksViewer'
+import Menu from './Menu.js'
 const ViewSubmission = (props) => {
     const [submissionOnScreen, changeSubmissionOnScreen] = useState(-1);
     const [result, changeResult] = useState({});
@@ -37,22 +39,26 @@ const ViewSubmission = (props) => {
         if(!result.compiled){
             resultPart = (<div>Compilation error: <br /> {JSON.stringify(result.result)} </div>);
         }else{
-            resultPart = (<div> <TestViewer Tests={result.result} /> </div>)
+            resultPart = (<TestViewer Tests={result.result} /> );
         }
+        var subtaskPart = (<SubtasksViewer Subtasks={result.subtasks} />);
+
         return (
-            <div>
-                Compilation: {result.compiled ? 'good' : 'bad'}
+            <div className="submissionViewerPage">
+                <Menu Username={props.Cookies.get('username')} Logout={props.Logout} />
+                <div className="scorePart"> Score: {result.score} </div>
+                <div className="compilationResultPart">Compilation: {result.compiled ? 'successful' : 'unsuccessful'} </div>
+                {subtaskPart}
                 <br /><br />
+                {resultPart} <br />
                 Code: <br />
-                  <CopyBlock
-                    text={result.code}
-                    language={'cpp'}
-                    showLineNumbers={true}
-                    wrapLines
-                    theme={atomOneDark}
-                  />
-                  <br />
-                {resultPart}
+                <CopyBlock
+                  text={result.code}
+                  language={'c'}
+                  showLineNumbers={true}
+                  wrapLines
+                  theme={theme}
+                />
 
             </div>
         );

@@ -27,7 +27,10 @@ app.use(express.static(path.resolve(__dirname, '../client/build')));
 function getTheSubmissionData(ID, result, compiled, taskName, username){                            // gets the submission data of `ID` submission
                                                                                                     // and writes it to the DB
     var pathToCpp = path.join(__dirname, 'database/codes/' + ID + '.cpp');
-    db.addSubmission(ID, compiled, result, pathToCpp, taskName, username, grader.evaluateSubtasks(compiled, result, taskName));
+    const pth = path.join(__dirname, './tasks/' + taskName + '/info.json');                         // path to info.json
+    const info = require(pth);
+    const subtasks = info.subtasks;
+    db.addSubmission(ID, compiled, result, pathToCpp, taskName, username, grader.evaluateSubtasks(compiled, result, taskName), grader.evaluateSubtasksFully(compiled, result, taskName));
     console.log('evaluated the submission ' + ID + ': ');
     console.log(result);
     console.log('-----');
@@ -56,7 +59,7 @@ app.post('/submit', function(req, res) {
                 }
                 var curNum = currentSubmissionNumber++;
                 res.send({submissionNumer: curNum});
-                db.addSubmission(curNum, false, [], '', taskName, username, -1);
+                db.addSubmission(curNum, false, [], '', taskName, username, -1, []);
                 grader.createFile(path.join(__dirname, 'database/codes/' + curNum + '.cpp'), thisCode).then( () => {
                     grader.runCode(thisCode, taskName, curNum, username, getTheSubmissionData);
                 });
@@ -115,7 +118,7 @@ app.post('/getResult', function(req, res) {
                         if (err) {
                             res.send({});
                         }else{
-                            var ret = {taskname: data.taskname, compiled: data.compiled, result: data.result, code: code};
+                            var ret = {score: data.score, subtasks: data.subtasks, taskname: data.taskname, compiled: data.compiled, result: data.result, code: code};
                             // FOR SOME AWFUL REASON, THE FRONTEND RECEIVES THE SAME ARRAY EXCEPT THE FIRST TO ELEMENTS ARE MISSING
                             // SO I INSERT ONE MORE null ELEMENT IN FROM OF THE ARRAY. I DO NOT KNOW WHY THIS IS THE CASE AND HOW TO
                             // FIX IT IN A NORMAL WAY!

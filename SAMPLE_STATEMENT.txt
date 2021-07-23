@@ -1,0 +1,77 @@
+### Sąlyga:
+(Salyga)
+
+### Užduotis:
+(užduotis)
+
+### Įvestis:
+(įvesties formatas)
+
+### Išvestis:
+(išvesties formatas)
+
+### Ribojimai:
+(ribojimai, pvz:)
+$3 \leq N ≤ 1 000 000 000$
+
+
+### Dalinės užduotys:
+
+<table class="subtasksStatmentTable">
+    <tr>
+        <th>Nr.</th>
+        <th>Taškai</th>
+        <th>Papildomi ribojimai</th>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>27</td>
+        <td>$N ≤ 5 000$, $1 ≤ K$, $y_k = N$</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>19</td>
+        <td>$N ≤ 5 000$, $K = 0$</td>
+    </tr>
+</table>
+
+
+
+
+
+
+
+
+
+### Pavyzdys:
+<table class="sampleInATask">
+    <tr>
+        <th>Pradiniai duomenys</th>
+        <th>Rezultatai</th>
+        <th>Paaiškinimas</th>
+    </tr>
+<tr>
+<td>
+
+```
+8 4 1
+3 2
+5 3
+6 0
+8 0
+2
+```
+
+</td>
+<td>
+
+```
+5 7 8 1
+```
+</td>
+
+<td>
+Paaiškinimas
+</td>
+</tr>
+</table>

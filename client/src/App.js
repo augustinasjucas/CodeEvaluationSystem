@@ -5,6 +5,8 @@ import Cookies from 'universal-cookie';
 import Api from './api.js'
 import MainPage from './components/MainPage.js'
 import ViewSubmission from './components/ViewSubmission.js'
+import Home from './components/Home.js'
+import MathJax from 'mathjax3-react';
 
 function App() {
     const [cookies ] = useState(new Cookies);
@@ -16,24 +18,27 @@ function App() {
         cookies.set('password', '', { path: '/' });
         changeLoggedIn(false);
     }
-
     if(loggedIn){                                                               // if logged in, return the page
         return (
-            <Router>
-                <div className="App">
-                    <Switch>
-                        <Route path="/submission/:id">
-                            <ViewSubmission Cookies={cookies} />
-                        </Route>
-                        <Route path="/login">
-                            <Redirect to="/" />
-                        </Route>
-                        <Route path="/">
-                            <MainPage Cookies={cookies} logOut={logOut}/>
-                        </Route>
-                    </Switch>
-                </div>
-            </Router>
+
+                <Router>
+                    <div className="App">
+                        <Switch>
+                            <Route path="/task/:taskName">
+                                <MainPage Cookies={cookies} logOut={logOut}/>
+                            </Route>
+                            <Route path="/submission/:id">
+                                <ViewSubmission Logout={logOut}Cookies={cookies} />
+                            </Route>
+                            <Route path="/login">
+                                <Redirect to="/" />
+                            </Route>
+                            <Route path="/">
+                                <Home Cookies={cookies} Logout={logOut} />
+                            </Route>
+                        </Switch>
+                    </div>
+                </Router>
           );
     }else{                                                                      // if not logged in return /login
         return (

@@ -28,7 +28,7 @@ const SubmissionsList = (props) => {
 
     var ret = submissions.map(sub => (<OneSubmissionResult key={sub.index} Submission={sub}/>));
     return (
-        <table>
+        <table className="submissionListTable">
             {ret}
         </table>
     );

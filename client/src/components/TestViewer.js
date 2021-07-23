@@ -8,7 +8,7 @@ const TestViewer = (props) => {
     return (
         <div>
             Test results:
-            <table style={{border: "1px solid black"}}>
+            <table className="testResultsTable">
                 {ret}
             </table>
         </div>

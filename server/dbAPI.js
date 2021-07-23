@@ -39,13 +39,15 @@ function getLastSubmissionNumber(){                                         // r
     });
 }
 
-function addSubmission(index, compiled, result, codePath, taskName, username, score){ // index - the number of the submission
+function addSubmission(index, compiled, result, codePath, taskName, username, score, subtasks){
+                                                                            // index - the number of the submission
                                                                             // compiled - true/false
                                                                             // result - error message if not compiled, array of test results else
                                                                             // codePath - path to the code
                                                                             // taskName - the shortname to the task
                                                                             // username - person, who submitted
                                                                             // score - score for this subtask
+                                                                            // subtasks - an array of subtasks during this submission
    // TODO: also add user id ; do not add index (make it auto increment)
    const pth = path.join(__dirname, './tasks/' + taskName + '/info.json');                         // path to info.json
    const info = require(pth);
@@ -56,13 +58,15 @@ function addSubmission(index, compiled, result, codePath, taskName, username, sc
            console.log(err);
        }
        dbPool.query(
-            `INSERT INTO submissions (index, compiled, result, codepath, taskname, username, score)
-             VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-            [index, compiled, JSON.stringify(result), codePath, taskName, username, score],
+            `INSERT INTO submissions (index, compiled, result, codepath, taskname, username, score, subtasks)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+            [index, compiled, JSON.stringify(result), codePath, taskName, username, score, JSON.stringify(subtasks)],
             (err, result) => {
                 if (err) {
-                    console.log("DB error occured: ");
+                    console.log("DB error occured here: ");
                     console.log(err);
+                    console.log('subtasks is ');
+                    console.log(subtasks);
                 }
             }
         );
