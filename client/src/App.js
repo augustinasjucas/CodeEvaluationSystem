@@ -7,7 +7,7 @@ import MainPage from './components/MainPage.js'
 import ViewSubmission from './components/ViewSubmission.js'
 import Home from './components/Home.js'
 import MathJax from 'mathjax3-react';
-
+import RegistrationPage from './components/RegistrationPage.js'
 function App() {
     const [cookies ] = useState(new Cookies);
     const [loggedIn, changeLoggedIn] = useState(Api.checkIfLoggedIn(cookies));
@@ -24,6 +24,9 @@ function App() {
                 <Router>
                     <div className="App">
                         <Switch>
+                            <Route path='/register'>
+                                <Redirect to='/' />
+                            </Route>
                             <Route path="/task/:taskName">
                                 <MainPage Cookies={cookies} logOut={logOut}/>
                             </Route>
@@ -45,6 +48,9 @@ function App() {
             <Router>
                 <div className="App">
                     <Switch>
+                        <Route path="/register">
+                            <RegistrationPage changeLoggedIn={changeLoggedIn}/>
+                        </Route>
                         <Route path="/login">
                             <LoginPage changeLoggedIn={changeLoggedIn} />
                         </Route>

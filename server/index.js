@@ -174,6 +174,17 @@ app.post('/login', function(req, res) {
     });
 });
 
+app.post('/register', function(req, res) {
+    var username = req.body.username;
+    var password = req.body.password;
+    var firstName = req.body.firstName;
+    var lastName = req.body.lastName;
+    db.registerUser(username, password, firstName, lastName).then((good) => {
+        console.log('send ' + good);
+        res.send({mes: good});
+    });
+});
+
 
 /*
 // All other GET requests not handled before will return our React app. Uncomment this before deploying the WHOLE app.

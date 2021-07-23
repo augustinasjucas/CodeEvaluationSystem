@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const dbPool = require('./dbPool.js');
 
+const MAX_USER_NUMBER = 50;                                                 // max 50 users in the system (to prevent attacks)
+
 var submissions = [];                                                       // temporary. has:
 //var users =[{username: 'insertUsername', password: 'insertHashedPassword'}];// temporary. has: username(string), password(string)
 
@@ -218,6 +220,68 @@ async function findAllTasksOfUser(username){
         resolve(ret);
     });
 }
+function howManyUsers(){
+    return new Promise((resolve, reject) => {
+        dbPool.query('SELECT count(*) AS count FROM users' + ';', (err, rs) => {
+            if(err){
+                console.log('error in DB: ');
+                console.log(err);
+            }
+            resolve(parseInt(rs.rows[0].count))
+        });
+    });
+}
+function doesUsernameExist(username){
+    return new Promise((resolve, reject) => {
+        dbPool.query('SELECT * FROM users WHERE username=($1)', [username], (err, rs) => {
+            if(err){
+                console.log('error in DB: ');
+                console.log(err);
+                resolve(true);
+            }
+            resolve(rs.rows.length > 0);
+        });
+    });
+}
+
+function registerUser(username, password, firstName, lastName){
+    return new Promise((resolve, reject) => {
+        doesUsernameExist(username).then((exists) =>{
+            if(exists){
+                resolve('Username in use!');
+                return ;
+            }
+            howManyUsers().then((res) => {
+                if(res >= MAX_USER_NUMBER) {
+                    resolve('Too many users in the system!');
+                    return ;
+                }
+                dbPool.query(
+                     `INSERT INTO users (username, password, firstName, lastName, isAdmin)
+                      VALUES ($1, $2, $3, $4, $5)`,
+                     [username, password, firstName, lastName, 'false'],
+                     (err, result) => {
+                         if (err) {
+                             console.log("DB error occured here: ");
+                             console.log(err);
+                             resolve('DB error');
+                             return ;
+                         }
+                         dbPool.query("CREATE TABLE user_submissions_" + username + "(index INT NOT NULL, compiled BOOLEAN NOT NULL, result json NOT NULL, codepath VARCHAR(100) NOT NULL, taskname VARCHAR(100) NOT NULL, username VARCHAR(100) NOT NULL, score real, subtasks json NOT NULL)", (err, res) => {
+                            if(err){
+                                console.log("DB error occured: ");
+                                console.log(err);
+                                resolve('DB error');
+                                return ;
+                            }
+                            resolve('Success!');
+                        });
+                     }
+                 );
+            });
+        });
+    });
+}
 module.exports = {
     getLastSubmissionNumber,
     addSubmission,
@@ -228,5 +292,6 @@ module.exports = {
     doesUserHavePermissionToTask,
     findAllTasksOfUser,
     doesTaskExists,
-    findSubmissions
+    findSubmissions,
+    registerUser
 }

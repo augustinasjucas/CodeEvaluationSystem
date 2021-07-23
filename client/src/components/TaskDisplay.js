@@ -12,7 +12,7 @@ const TaskDisplay = (props) => {
     const [testResult, setTestResult] = useState('');
     const [statement, changeStatement] = useState('Loading');
     const [haveToUpdateSubmissions, changeHaveToUpdateSubmissions] = useState(true);
-
+    const [taskName, changeTaskName] = useState('');
     // converts all \n to <br /> in the statement
     const escapedNewLineToLineBreakTag = (string) => {
         return string;
@@ -44,6 +44,7 @@ const TaskDisplay = (props) => {
         Api.getTaskData(taskName, username, password).then((data) => {
             data.statement += '\n\nLaiko limitas: ' + data.timeLimit + 'ms\n\nAtminties limitas: ' + data.memoryLimit + 'MB\n';
             changeStatement(escapedNewLineToLineBreakTag(data.statement));
+            changeTaskName(data.name);
         });
 
     };
@@ -58,7 +59,7 @@ const TaskDisplay = (props) => {
     if(props.TaskName != ''){
         return (
             <div className="taskDisplay">
-                <br />
+                <center><h2>{taskName}</h2></center>
                 <MathJax.Provider
                     options={{
                       tex: {

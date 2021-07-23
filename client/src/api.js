@@ -113,6 +113,26 @@ class Api {
                 });
         });
     }
+    static registerNewUser(username, password, firstName, lastName){
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({username: username, password: password, firstName: firstName, lastName: lastName})
+        };
+        return new Promise ( (resolve, reject) => {
+            if(username == '' || password == '' || firstName == '' || lastName == '') {
+                resolve({mes: 'Empty fields!'});
+                return ;
+            }
+
+            fetch('/register', requestOptions)
+                .then(response => response.json())
+                .then((data) => {
+                    console.log('Resolve ' + data);
+                    resolve(data);
+                });
+        });
+    }
 
 }
 export default Api;
