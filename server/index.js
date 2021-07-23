@@ -185,6 +185,45 @@ app.post('/register', function(req, res) {
     });
 });
 
+app.post('/createNewContest', (req, res) => {
+    var username = req.body.username;
+    var password = req.body.password;
+    var contestName = req.body.contestName;
+    db.findIfUserExists(username, password).then((exists) => {
+        if(!exists){
+            res.send({id: -1});
+            return ;
+        }
+        db.checkIfUserIsAdmin(username).then((is) => {
+            if(!is){
+                res.send({id: -1});
+                return ;
+            }
+            db.createContest(contestName).then((id) => {
+                res.send({id: id});
+            });
+        });
+    });
+});
+app.post('/getAllContests', (req, res) => {
+    var username = req.body.username;
+    var password = req.body.password;
+    db.findIfUserExists(username, password).then((exists) => {
+        if(!exists){
+            res.send({id: -1});
+            return ;
+        }
+        db.checkIfUserIsAdmin(username).then((is) => {
+            if(!is){
+                res.send({id: -1});
+                return ;
+            }
+            db.getAllContests().then((data) => {
+                res.send(data);
+            });
+        });
+    });
+});
 
 /*
 // All other GET requests not handled before will return our React app. Uncomment this before deploying the WHOLE app.

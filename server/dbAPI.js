@@ -90,6 +90,8 @@ function addSubmission(index, compiled, result, codePath, taskName, username, sc
     });
 
 }
+
+// Gets an array of subissions of a user to a specific task
 function findSubmissions(username, task){
     return new Promise((resolve, reject) => {
         var tableName = 'user_submissions_' + username;
@@ -220,6 +222,8 @@ async function findAllTasksOfUser(username){
         resolve(ret);
     });
 }
+
+// Finds how many users are in DB
 function howManyUsers(){
     return new Promise((resolve, reject) => {
         dbPool.query('SELECT count(*) AS count FROM users' + ';', (err, rs) => {
@@ -231,6 +235,8 @@ function howManyUsers(){
         });
     });
 }
+
+// Checks if such username already exists
 function doesUsernameExist(username){
     return new Promise((resolve, reject) => {
         dbPool.query('SELECT * FROM users WHERE username=($1)', [username], (err, rs) => {
@@ -244,6 +250,8 @@ function doesUsernameExist(username){
     });
 }
 
+// Adds the username, password, firstName, lastName to the users  table
+// and creates the submission table for this user.
 function registerUser(username, password, firstName, lastName){
     return new Promise((resolve, reject) => {
         doesUsernameExist(username).then((exists) =>{
@@ -282,6 +290,73 @@ function registerUser(username, password, firstName, lastName){
         });
     });
 }
+function checkIfUserIsAdmin(username){
+    return new Promise((resolve, reject) => {
+        dbPool.query(
+            'SELECT * FROM users WHERE username=($1) AND isAdmin=($2)',
+            [username, 'true'],
+            (err, result) => {
+                if (err) {
+                    console.log('DB error: ' + err);
+                    resolve(false);
+                    return ;
+                }
+                const rows = result.rows;
+                if(rows.length == 0) resolve(false);
+                resolve(true);
+            }
+        );
+    });
+}
+
+// Adds a row into the contests table with the name of the contest
+// Then creates tables contest_users_id and contest_tasks_id for storing
+// the tasks and the users of the contest.
+function createContest(contestName){
+    return new Promise((resolve, reject) => {
+        dbPool.query(   //INSERT INTO persons (lastname,firstname) VALUES ('Smith', 'John') RETURNING id;
+            'INSERT INTO contests (name) VALUES ($1) RETURNING id',
+            [contestName],
+            (err, result) => {
+                if (err) {
+                    console.log('DB error: ' + err);
+                    resolve(false);
+                    return ;
+                }
+                const id = result.rows[0].id;
+                dbPool.query("CREATE TABLE contest_tasks_" + id + " (taskname VARCHAR(100) NOT NULL)", (err, res) => {
+                   if(err){
+                       console.log("DB error occured: ");
+                       console.log(err);
+                       resolve(-1);
+                       return ;
+                   }
+                   dbPool.query("CREATE TABLE contest_users_" + id + " (username VARCHAR(100) NOT NULL)", (err, res) => {
+                      if(err){
+                          console.log("DB error occured: ");
+                          console.log(err);
+                          resolve(-1);
+                          return ;
+                      }
+                      resolve(id);
+                  });
+               });
+            }
+        );
+    });
+}
+function getAllContests(){
+    return new Promise((resolve, reject) => {
+        dbPool.query('SELECT * FROM contests', (err, res) => {
+            if(err){
+                console.log('DB error ' + err);
+                resolve([]);
+                return ;
+            }
+            resolve(res.rows);
+        });
+    });
+}
 module.exports = {
     getLastSubmissionNumber,
     addSubmission,
@@ -293,5 +368,8 @@ module.exports = {
     findAllTasksOfUser,
     doesTaskExists,
     findSubmissions,
-    registerUser
+    registerUser,
+    createContest,
+    checkIfUserIsAdmin,
+    getAllContests
 }

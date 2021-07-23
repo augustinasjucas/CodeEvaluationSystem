@@ -8,6 +8,9 @@ import ViewSubmission from './components/ViewSubmission.js'
 import Home from './components/Home.js'
 import MathJax from 'mathjax3-react';
 import RegistrationPage from './components/RegistrationPage.js'
+import ManagerPage from './components/ManagerPage.js'
+import ManageContest from './components/ManageContest.js'
+
 function App() {
     const [cookies ] = useState(new Cookies);
     const [loggedIn, changeLoggedIn] = useState(Api.checkIfLoggedIn(cookies));
@@ -24,6 +27,12 @@ function App() {
                 <Router>
                     <div className="App">
                         <Switch>
+                            <Route path='/manager/contest/:id'>
+                                <ManageContest Cookies={cookies}/>
+                            </Route>
+                            <Route path='/manager' >
+                                <ManagerPage Cookies={cookies} />
+                            </Route>
                             <Route path='/register'>
                                 <Redirect to='/' />
                             </Route>

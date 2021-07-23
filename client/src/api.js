@@ -133,6 +133,36 @@ class Api {
                 });
         });
     }
+    static createNewContest(username, password, contestName){
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({username: username, password: password, contestName: contestName})
+        };
+        return new Promise ( (resolve, reject) => {
+
+            fetch('/createNewContest', requestOptions)
+                .then(response => response.json())
+                .then((data) => {
+                    resolve(data);
+                });
+        });
+    }
+    static getAllContests(username, password){
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({username: username, password: password})
+        };
+        return new Promise ( (resolve, reject) => {
+
+            fetch('/getAllContests', requestOptions)
+                .then(response => response.json())
+                .then((data) => {
+                    resolve(data);
+                });
+        });
+    }
 
 }
 export default Api;

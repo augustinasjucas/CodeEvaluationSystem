@@ -34,3 +34,8 @@ CREATE TABLE user_submissions_admin(
     name       VARCHAR(100) NOT NULL,
     score      real
 );
+
+CREATE TABLE contests (
+    id         SERIAL PRIMARY KEY,
+    name       VARCHAR(100) NOT NULL
+);
