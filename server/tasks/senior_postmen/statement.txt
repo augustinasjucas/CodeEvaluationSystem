@@ -1,0 +1,138 @@
+### Sąlyga:
+Dabar 2036-ieji metai ir Europa yra perpildyta garbaus amžiaus piliečiais.
+Tam, kad jie išliktų sveiki, Europos daugumų ministerija (garbaus amžiaus
+piliečiai **yra** dauguma!) siūlo įdarbinti juos popierinių laiškų,
+kurie vis dar yra siunčiami (dažniausiai būtent garbaus amžiaus piliečiams),
+išnešiotojais. Šis pasiūlymas bus realizuotas visoje Europoje.
+
+Ministerija sukūrė „garbaus amžiaus paštininkų sistemą“ padalindama visą
+Europą į pašto rajonus. Pašto rajonas -- tai gatvių tinklas, sudarytas iš
+gatvių ir sankryžų. Kiekviena gatve šiame tinkle galima eiti abejomis
+kryptimis. Kiekviename rajone paštininkais galima pasamdyti neribotą skaičių
+garbaus amžiaus piliečių. Kiekvieną rytą, kiekvienas paštininkas gauna krepšį
+su laiškais, kuriuos reikia pristatyti keliaujant maršrutu, dengiančiu dalį
+gatvių tinklo. Kiekvienas maršrutas turi būti tinkamas garbiam amžiui, t. y.
+jis turi tenkinti šias sąlygas:
+1.  Prasidėti ir baigtis toje pačioje sankryžoje.
+
+2.  Nekirsti jokios sankryžos daugiau nei vieną kartą (nepainiokite
+    garbaus amžiaus piliečių).
+    
+3.  Neturėti bendrų gatvių su kitais maršrutais, t.y. kiekvieną gatvę
+    aptarnauja lygiai vienas paštininkas (garbaus amžiaus piliečiai
+    neturėtų peštis tarpusavyje).
+
+Visi maršrutai kartu privalo pilnai padengti duotą gatvių tinklą: t. y.
+kiekviena tinklo gatvė turi būti lygiai vieno maršruto dalimi.
+
+### Užduotis:
+Ministerija prašo jūsų sukurti programą, kuri duotam pašto rajono gatvių
+tinklui surastų garbiam amžiui tinkamų maršrutų aibę, kuri pilnai padengtų
+gatvių tinklą.
+
+### Įvestis:
+Įvestis apibūdina gatvių tinklą.
+
+Pirmoje eilutėje yra du sveikieji skaičiai $N$ ir $M$ - atitinkamai
+sankryžų skaičius ir gatvių skaičius. Sankryžos numeruojamos nuo $1$ iki $N$.
+
+Toliau kiekvienoje iš $M$ eilučių yra du sveikieji skaičiai $u$ ir $v$
+($1 \le u, v \le N, u \neq v$), reiškiantys, kad sankryžas Nr. $u$ ir Nr.
+$v$ jungia gatvė.
+
+Kiekvienai įvesčiai galioja:
+
+1. Kiekvieną sankryžų porą jungia ne daugiau nei viena gatvė.
+2. Iš bet kurios sankryžos galima pasiekti bet kurią kitą keliaujant
+    viena arba daugiau gatvių.
+3. Sprendinys visada egzistuoja, t.y. visada galima rasti garbiam
+    amžiui tinkamų maršrutų aibę, kuri pilnai padengia gatvių tinklą.
+
+### Išvestis:
+
+Kiekviena eilutė turi atitikti vieną garbiam amžiui tinkamą maršrutą -
+joje turi būti išvardytos maršrutą sudarančios sankryžos ta tvarka, kuria
+jas aplanko paštininkas. Pradinę ir galinę sankryžą išveskite pirmą (ir ją
+išveskite tik kartą).
+
+Jeigu egzistuoja keletas sprendinių, jūsų programa gali išvesti bet kurį
+iš jų.
+
+### Pavyzdys:
+
+<table class="sampleInATask">
+    <tr>
+        <th>Pradiniai duomenys</th>
+        <th>Rezultatai</th>
+        <th>Paaiškinimas</th>
+    </tr>
+<tr>
+<td>
+
+```
+10 15
+1 3
+5 1
+2 3
+9 2
+3 4
+6 3
+4 5
+7 4
+4 8
+5 7
+8 5
+6 7
+7 8
+8 10
+10 9
+```
+
+</td>
+<td>
+
+```
+2 3 4 5 8 10 9
+7 8 4
+1 5 7 6 3
+```
+</td>
+
+<td>
+Pateiktas paveikslėlis iliustruoja gatvių tinklą ir tris garbiam amžiui
+tinkamus maršrutus, kurie pilnai jį padengia.
+
+<img alt="Image" width="30%" src="https://i.ibb.co/gMmn40J/Screenshot-from-2021-07-24-15-14-08.png" />
+
+Atkreipkite dėmesį, kad šiam pavyzdžiui egzistuoja keletas sprendinių,
+ir kai kuriuos iš jų sudaro tik du maršrutai.
+</td>
+</tr>
+</table>
+
+### Dalinės užduotys:
+
+
+<table class="subtasksStatmentTable">
+    <tr>
+        <th>Nr.</th>
+        <th>Taškai</th>
+        <th>Papildomi ribojimai</th>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>38</td>
+        <td>$3 \le N \le 2\ 000$, $3 \le M \le 100\ 000$</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>17</td>
+        <td>$3 \le N \le 100\ 000$, $3 \le M \le 100\ 000$</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>45</td>
+        <td>$3 \le N \le 500\ 000$, $3 \le M \le 500\ 000$</td>
+    </tr>
+
+</table>

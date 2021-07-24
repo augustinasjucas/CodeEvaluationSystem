@@ -1,149 +1,98 @@
-#include <bits/stdc++.h>
-
+/*
+Official solution for postmen. 
+Complexity O(N + M)
+Author: Kestutis Vilcinskas
+*/
+#include <cstdio>
+#include <set>
+#include <vector>
+#include <algorithm>
 using namespace std;
+const int MaxN = 500010,
+	  	  MaxM = 2*500010;
 
-#define FAST_IO ios_base::sync_with_stdio(0); cin.tie(nullptr)
-#define FOR(i, a, b) for (int i = (a); i <= (b); i++)
-#define REP(n) FOR(O, 1, (n))
-#define f first
-#define s second
-#define pb push_back
-typedef long long ll;
-typedef long double ld;
-typedef pair<int, int> pii;
-typedef vector<int> vi;
-typedef vector<ll> vl;
-typedef vector<pii> vii;
 
-const int MAXN = 500100;
-const ll INF = 1e17;
+int E[MaxM][3];
+int pr[MaxN] = {0};
 
-int n;
-ll k;
-ll m;
-vi adj[MAXN];
-ll a[MAXN];
-vi spec;
-bool isSpec[MAXN];
-bool toClose[MAXN];
+int P[MaxN], tmp[MaxN] = {0}, C[MaxN];
+int k[MaxM];
 
-bool doDp[MAXN];
-int cntSpec[MAXN];
-ll cost[MAXN];
-ll dp[MAXN][3];
+int N, M, a, b;
 
-void dfs1 (int v, int p) {
-    if (isSpec[v]) cntSpec[v]++;
-    for (int u : adj[v]) {
-        if (u == p) continue;
-        dfs1 (u, v);
-        cntSpec[v] += cntSpec[u];
-    }
+bool visited[MaxN] = {0};
+vector<int> path;
 
-    if (isSpec[v]) doDp[v] = true;
-    else if (cntSpec[v] > 0 && (k-cntSpec[v]) > 0) doDp[v] = true;
+int newv = -1, u;
+
+int getU (int i, int v) {
+	return (v == E[i][0]) ? E[i][1] : E[i][0];
 }
 
-void dfs2 (int v, int p = -1) {
-    cost[v] = m;
-    for (int u : adj[v]) {
-        if (u == p) continue;
-        if (doDp[u]) continue;
-        dfs2(u, v);
-        cost[v] += cost[u];
-    }
 
-    if (p != -1) cost[v] = min(cost[v], a[v]);
+void dfs(int v) {
+	path.clear();
+	path.push_back(v);	
+	while (v != -1) {
+		//printf("V = %d!!!\n", v);
+		visited[v] = true;
+		newv = -1;
+		for (; pr[v] < C[v]; pr[v]++) {
+			int i = k[P[v] + pr[v]];
+				if (E[i][2] == false) {
+					u = getU(i, v);
+					E[i][2] = true;
+					if (visited[u]) {
+						newv = u;
+						while (path.back() != u) {
+						       	printf("%d ", path.back());
+							visited[path.back()] = false;
+							path.pop_back();
+						}
+						printf("%d\n", path.back());
+					}else {
+						newv = u;
+						path.push_back(u);
+					}
+					break;
+				}
+		}
+		if (newv == -1 and path.size() > 1) {
+			newv = path.back();
+			path.pop_back();
+		}
+		v =newv;
+	}
+	visited[path[0]] = false;
+	//for (int i = 0; i < path.size(); i++)
+	//	visited[path[i]] = false;
 }
 
-void dfs3 (int v, int p = -1) {
-    ll sum0 = 0, sumAll = 0, sum1 = 0;
-    ll sum02 = 0;
-    ll sum01 = 0;
-    for (int u : adj[v]) {
-        if (u == p) continue;
-        if (!doDp[u]) continue;
-        dfs3(u, v);
 
-        sum1 += dp[u][1];
-        sum0 += dp[u][0];
-        sumAll += min(min(dp[u][0], dp[u][1]), dp[u][2]);
-        sum02 += min(dp[u][0], dp[u][2]);
-        sum01 += min(dp[u][0], dp[u][1]);
 
-        sum0 = min(sum0, INF);
-        sum1 = min(sum1, INF);
-        sumAll = min(sumAll, INF);
-        sum02 = min(sum02, INF);
-        sum01 = min(sum01, INF);
-    }
-
-    if (!isSpec[v]) {
-        dp[v][0] = sumAll + a[v];
-        dp[v][2] = min(sum02, dp[v][0]);
-    } else dp[v][0] = dp[v][2] = INF;
-    dp[v][0] = min(dp[v][0], INF);
-    dp[v][2] = min(dp[v][2], INF);
-
-    dp[v][1] = sum01 + cost[v];
-
-    //FOR(xx, 0, 1) dp[v][xx] = min(dp[v][xx], INF);
-
-    //cout << " v = " << v << "  dp0 =  " << dp[v][0] << "  dp1 = " << dp[v][1] << endl;
-}
-
-void sub6() {
-    dfs1(1, -1);
-    /*FOR(i, 1,n) {
-        if (doDp[i])
-            dfs2(i, -1);
-    }*/
-    FOR(i, 1, n) doDp[i] = true;
-    FOR(i ,1, n) cost[i] = m;
-
-   // FOR(i,1 , n) cout << " i = " << i <<  " doDp = " << doDp[i] << " cost = " << cost[i] << endl;
-
-    int r = spec[0];
-    dfs3 (r, -1);
-
-    cout << dp[r][1] << "\n";
-}
-
-int main()
-{
-    FAST_IO;
-
-    cin >> n >> k >> m;
-   // bool isSub2 = true;
-    REP(n-1) {
-        int u, v; cin >> u >> v;
-        adj[u].pb(v);
-        adj[v].pb(u);
-
-      //  if (abs(u-v) != 1) isSub2 = false;
-    }
-    FOR(i, 1, n) cin >> a[i];
-    REP(k) {
-        int v; cin >> v;
-        spec.pb(v);
-        isSpec[v] = true;
-    }
-
-   // cout << " sub2 rez: " << endl;
-    //sub2();
-    //cout << endl << endl;
-
-   /* cout << " sub6 rez: " << endl;
-    sub6();
-    cout << endl << endl; */
-
-    sub6();
-    return 0;
-
-    /*if (k == 1) sub3();
-    else if (isSub2) sub2();
-    else if (k == 2) sub4();
-    else sub1();*/
-
-    return 0;
+int main() {
+	path.reserve(MaxN);	
+	scanf("%d%d\n", &N, &M);
+	for (int i = 0; i < M; i++) {
+		scanf("%d%d", &E[i][0], &E[i][1]);
+		C[E[i][0]]++;
+		C[E[i][1]]++;
+	}
+    
+	P[1] = 0;
+	for (int i = 2; i <= N; i++) {
+		P[i] = P[i-1] + C[i-1];
+	}
+	for (int i = 0; i < M; i++) {
+		a = E[i][0]; b = E[i][1];
+		k[P[a] + tmp[a]] = i;
+		k[P[b] + tmp[b]] = i;
+		tmp[a]++;
+		tmp[b]++;
+	}
+	for (int i = 1; i <= N; i++) {
+		dfs(i);
+		
+		}
+	return 0;
 }

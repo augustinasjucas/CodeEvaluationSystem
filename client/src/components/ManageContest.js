@@ -6,7 +6,7 @@ const ManageContest = (props) => {
     var { id } = useParams();
     const [contestOnScreen, changeContestOnScreen] = useState(-1);
     const loadData = (id) => {
-        
+
     }
     useEffect(() => {
         if(contestOnScreen === id){

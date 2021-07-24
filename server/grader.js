@@ -4,7 +4,7 @@ const { exec } = require('child_process');                                      
 
 var queue = [];
 const AVAILABLE_MEMORY = 1000 * 1000 * 1500;                                                        // 1.5 GB
-const AVAILABLE_THREADS = 4;                                                                        // How many procceses at a time?
+const AVAILABLE_THREADS = 1;                                                                        // How many procceses at a time?
 
 var usedMemory = 0;
 var currentProcesses = 0;
@@ -137,12 +137,12 @@ function checkQueue(){
                     ths.returnVerdict(ths.id, data.error, false, ths.taskName, ths.username);
                 });
             }else{
-                compiled(ths.taskInfo, ths.id, ths.execPath, ths.codePath, ths.taskName, ths.returnVerdict, ths.username);
+                compiled(ths.taskInfo, ths.id, ths.execPath, ths.codePath, ths.taskName, ths.returnVerdict, ths.username, ths.needsChecker);
             }
         });
     }else if(ths.type == 'test'){                                                                   // if its a test, runs it
         runTest(ths.inpPath, ths.execPath, ths.time, ths.memory).then((data) => {
-            extractResult(data, ths.outPath).then((final) => {
+            extractResult(data, ths.outPath, ths.needsChecker, ths.taskName, ths.inpPath).then((final) => {
                 addOneTestToSubmission(ths.id, ths.testNum, final, ths.codePath, ths.execPath, ths.taskName, ths.returnVerdict, ths.username);
                 usedMemory -= ths.memory * 1024 * 1024;
                 currentProcesses--;
@@ -151,13 +151,13 @@ function checkQueue(){
     }
 }
 setInterval(checkQueue, 40);                                                                        // checks the queue every 50ms
-function compiled(info, ID, execPath, codePath, taskName, returnVerdict, username){
+function compiled(info, ID, execPath, codePath, taskName, returnVerdict, username, needsChecker){
 
     for(var i = 1; i <= info.tests; i++){                                                           // loops through the tests
         const inpPath = path.join(__dirname, '/tasks/' + taskName + '/tests/input/' + i + '.in');
         const outPath = path.join(__dirname, '/tasks/' + taskName + '/tests/output/' + i + '.out');
         if(!fileExists(inpPath) || !fileExists(outPath)) return ["Wrong test data!"];               // this shouldn't ever happen!
-        queue.push({outPath: outPath, inpPath: inpPath, execPath: execPath, codePath: codePath, time: info.time_limit, memory: info.memory_limit, id: ID, testNum: i, taskName: taskName, returnVerdict: returnVerdict, type: 'test', username: username});
+        queue.push({outPath: outPath, inpPath: inpPath, execPath: execPath, codePath: codePath, time: info.time_limit, memory: info.memory_limit, id: ID, testNum: i, taskName: taskName, returnVerdict: returnVerdict, type: 'test', username: username, needsChecker: needsChecker});
     }
 }
 
@@ -187,7 +187,7 @@ function runTest(inputPath, execPath, timeLimit, memoryLimit){                  
 function findPattern(where, what){                                                                  // return true if 'what' is found within 'where'
     return where.includes(what);
 }
-function extractResult(test, correctOutput){                                                  // takes the output of command and gets result in normal form
+function extractResult(test, correctOutput, needsChecker, taskName, inputPath){                                // takes the output of command and gets result in normal form
 
     return new Promise ((resolve, reject) => {
         //console.log('test:');
@@ -216,22 +216,27 @@ function extractResult(test, correctOutput){                                    
         if(findPattern(test.stderr, 'error')){
             resolve({points: 0, message: 'ABN'});
         }
-        let command = 'echo "' + correctOutput + ' ' + test.stdout + '" | ' + path.join(__dirname, '/additionalPrograms/comparison');
-        executeCommand(command, 10000, 10)
-            .then((data) => {
+        if(!needsChecker){                                                      // just compares two files
+            let command = 'echo "' + correctOutput + ' ' + test.stdout + '" | ' + path.join(__dirname, '/additionalPrograms/comparison');
+            executeCommand(command, 10000, 10)
+                .then((data) => {
+                      removeFile(test.stdout).then(() => {
+                          if(data.stdout == 'Yes') resolve({points: 1, message: 'AC'});
+                          if(data.stdout == 'No') resolve({points: 0, message: 'WA'});
+                      });
+                });
+        }else{
 
-                // if(test.stdout == '/home/augustinasjucas/Documents/SistemaAA/server/submissionsFolder/outputOf1.out')
-                //  fs.readFile(correctOutput, 'utf-8', (err, cor) => {
-                //      fs.readFile(test.stdout, 'utf-8', (errM, mine) => {
-                //          console.log('runs test ' + 1 + ', correct result is "' + cor + '", mine is "' + mine + '", error is ' + errM);
-                //
-                //      });
-                //   });
-                  removeFile(test.stdout).then(() => {
-                      if(data.stdout == 'Yes') resolve({points: 1, message: 'AC'});
-                      if(data.stdout == 'No') resolve({points: 0, message: 'WA'});
-                  });
-            });
+            let command = 'echo "' + inputPath + ' ' +   test.stdout + '" | ' + path.join(__dirname, '/tasks/' + taskName + '/checker');
+            console.log('komanda: ' + command);
+            executeCommand(command, 10000, 64)
+                .then((data) => {
+                    removeFile(test.stdout).then(() => {
+                          var res = parseInt(data.stdout);
+                          resolve({points: res, message: (res == 1 ? 'AC' : 'WA')});
+                     });
+                });
+        }
 
     });
 }
@@ -250,7 +255,7 @@ async function runCode(code, taskName, ID, username, returnVerdict){
     await createFile(codePath, code);                                                               // creates the cpp file
 
     var compilationCommand = 'g++ -DEVAL -O3 -fsanitize=undefined -std=c++17 -o ' + execPath + ' ' + codePath;
-    queue.push({command: compilationCommand, time: 10000, memory: 500, type: 'compilation', after: compiled, taskInfo: info, id: ID, execPath: execPath, codePath: codePath, taskName: taskName, username: username, returnVerdict: returnVerdict});
+    queue.push({command: compilationCommand, time: 10000, memory: 500, type: 'compilation', after: compiled, taskInfo: info, id: ID, execPath: execPath, codePath: codePath, taskName: taskName, username: username, returnVerdict: returnVerdict, needsChecker: info.needsChecker});
 }
 
 

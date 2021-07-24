@@ -1,78 +1,98 @@
-#include <iostream>
-#include <algorithm>
+/*
+Official solution for postmen. 
+Complexity O(N + M)
+Author: Kestutis Vilcinskas
+*/
+#include <cstdio>
+#include <set>
 #include <vector>
-
+#include <algorithm>
 using namespace std;
+const int MaxN = 500010,
+	  	  MaxM = 2*500010;
 
-int main(){
-    cin.tie(NULL);
-    ios_base::sync_with_stdio(false);
-    int N, M, K;
-    cin >> N >> M >> K;
 
-    // skaičiavimai su a, x, y gali siekti iki 4*10^9, taigi į paprastą int netelpa
-    vector<unsigned int> a(2*M+1), x(2*M+1), y(2*K);
-    for(int i = 0; i < M; i++)
-        cin >> x[i] >> a[i];
-    for(int i = 0; i < K; i++)
-        cin >> y[i];
+int E[MaxM][3];
+int pr[MaxN] = {0};
+
+int P[MaxN], tmp[MaxN] = {0}, C[MaxN];
+int k[MaxM];
+
+int N, M, a, b;
+
+bool visited[MaxN] = {0};
+vector<int> path;
+
+int newv = -1, u;
+
+int getU (int i, int v) {
+	return (v == E[i][0]) ? E[i][1] : E[i][0];
+}
+
+
+void dfs(int v) {
+	path.clear();
+	path.push_back(v);	
+	while (v != -1) {
+		//printf("V = %d!!!\n", v);
+		visited[v] = true;
+		newv = -1;
+		for (; pr[v] < C[v]; pr[v]++) {
+			int i = k[P[v] + pr[v]];
+				if (E[i][2] == false) {
+					u = getU(i, v);
+					E[i][2] = true;
+					if (visited[u]) {
+						newv = u;
+						while (path.back() != u) {
+						       	printf("%d ", path.back());
+							visited[path.back()] = false;
+							path.pop_back();
+						}
+						printf("%d\n", path.back());
+					}else {
+						newv = u;
+						path.push_back(u);
+					}
+					break;
+				}
+		}
+		if (newv == -1 and path.size() > 1) {
+			newv = path.back();
+			path.pop_back();
+		}
+		v =newv;
+	}
+	visited[path[0]] = false;
+	//for (int i = 0; i < path.size(); i++)
+	//	visited[path[i]] = false;
+}
+
+
+
+int main() {
+	path.reserve(MaxN);	
+	scanf("%d%d\n", &N, &M);
+	for (int i = 0; i < M; i++) {
+		scanf("%d%d", &E[i][0], &E[i][1]);
+		C[E[i][0]]++;
+		C[E[i][1]]++;
+	}
     
-    // padarom dvi apskritimo kopijas, kad galėtumėm apie apskritimą galvoti kaip apie tiesę
-    for(int i = 0; i < M; i++)
-        x[i+M] = x[i] + N, a[i+M] = a[i];
-    for(int i = 0; i < K; i++)
-        y[i+K] = y[i] + N;
-
-    // nukopijuojame dar vieną robotą, kad būtų už paskutinės sienos
-    x[2*M] = x[0] + 2*N;
-    a[2*M] = a[0];
-
-    // čia saugosime galutines robotų koordinates
-    vector<int> atsakymas(M);
-    if(K == 0){ // be sienų
-        // randam roboto su didžiausia komanda indeksą
-        // nuo jo pradėsim skaičiavimus
-        int pirmas = distance(a.begin(), max_element(a.begin(), a.end()));
-
-        // žymi sekciją, į kurią atsistojo paskutinis nagrinėtas robotas
-        unsigned int paskutine_poz = -1;
-        for(int i = pirmas; i < M + pirmas; i++){
-            // robotas i paeina iki x[i] + a[i] ir dar galimai pastumiamas iki paskutine_poz + 1
-            paskutine_poz = max(paskutine_poz + 1, x[i] + a[i]);
-            atsakymas[i % M] = (paskutine_poz - 1) % N + 1;
-        }
-    }
-    else{ // su sienom
-        // pirmo nenagrinėto roboto indeksas
-        int pirmas = 0;
-        for(int i = 0; i < K; i++){
-            // nagrinėsim robotus tarp kairės ir dešinės sienų
-            unsigned int kaire_siena = y[i], desine_siena = y[i+1];
-            // surandam pirmą robotą, kur stovi už kairės sienos
-            while(x[pirmas] < kaire_siena)pirmas++; 
-            // surandam pirmą robotą, kur stovi už dešinės sienos
-            int paskutinis = pirmas;
-            while(x[paskutinis] < desine_siena)paskutinis++;
-
-            // žymi, kiek dar robotų reikia surasti galutines pozicijas tarp kaire_siena ir desine_siena
-            int kiekis = paskutinis - pirmas;
-
-            // žymi sekciją, į kurią atsistojo paskutinis nagrinėtas robotas
-            unsigned int paskutine_poz = kaire_siena;
-            for(int j = pirmas; j < paskutinis; j++){
-                // robotas j paeina iki x[j] + a[j] ir dar galimai pastumiamas
-                // iki paskutine_poz + 1, bet ne toliau nei desine_siena - kiekis, 
-                // kad paliktumėm vietos likusiems robotams
-                paskutine_poz = min(max(x[j] + a[j], paskutine_poz + 1), desine_siena - kiekis);
-                kiekis -= 1;
-                atsakymas[j % M] = (paskutine_poz - 1) % N + 1;
-            }
-            pirmas = paskutinis;
-        }
-    }   
-
-    for(int pozicija: atsakymas){
-        cout << pozicija << " ";
-    }
-    cout << endl;
+	P[1] = 0;
+	for (int i = 2; i <= N; i++) {
+		P[i] = P[i-1] + C[i-1];
+	}
+	for (int i = 0; i < M; i++) {
+		a = E[i][0]; b = E[i][1];
+		k[P[a] + tmp[a]] = i;
+		k[P[b] + tmp[b]] = i;
+		tmp[a]++;
+		tmp[b]++;
+	}
+	for (int i = 1; i <= N; i++) {
+		dfs(i);
+		
+		}
+	return 0;
 }

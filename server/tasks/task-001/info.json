@@ -4,5 +4,6 @@
     "subtasks": [{"points": 1, "tests": [0, 1, 2, 3, 4, 5]}],
     "tests": 11,
     "memory_limit": 10,
-    "users": ["insertUsername"]
+    "users": ["insertUsername"],
+    "needsChecker": false
 }
