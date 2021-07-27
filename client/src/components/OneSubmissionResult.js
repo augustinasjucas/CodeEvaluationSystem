@@ -12,13 +12,28 @@ const OneSubmissionResult = (props) => {
                 </tr>
         );
 
-    }else{
+    }else if(!props.ShowUsername){
         return (
             <div>
                 <Link to={'/submission/' + props.Submission.index} >
                     <tr className="submissionResultRow">
                         <td className="submissionResultIndex">{props.Submission.index}</td>
                         <td className="submissionResultNameOfTask">{props.Submission.name}</td>
+                        <td className="submissionResultScore">{props.Submission.score} / 100 </td>
+                        <td className="submissionResultTime">{props.Submission.time}</td>
+                    </tr>
+                </Link>
+
+            </div>
+        );
+    }else{
+        return (
+            <div>
+                <Link to={'/submission/' + props.Submission.index} >
+                    <tr className="submissionResultRow">
+                        <td className="submissionResultIndex">{props.Submission.index}</td>
+                        <td className="submissionResultUsername">{props.Submission.username}</td>
+                        <td className="submissionResultNameOfTask">{props.Submission.taskname}</td>
                         <td className="submissionResultScore">{props.Submission.score} / 100 </td>
                         <td className="submissionResultTime">{props.Submission.time}</td>
                     </tr>

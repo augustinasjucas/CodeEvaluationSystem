@@ -10,7 +10,7 @@ import MathJax from 'mathjax3-react';
 import RegistrationPage from './components/RegistrationPage.js'
 import ManagerPage from './components/ManagerPage.js'
 import ManageContest from './components/ManageContest.js'
-
+import ContestViewer from './components/ContestViewer.js'
 function App() {
     const [cookies ] = useState(new Cookies);
     const [loggedIn, changeLoggedIn] = useState(Api.checkIfLoggedIn(cookies));
@@ -27,6 +27,9 @@ function App() {
                 <Router>
                     <div className="App">
                         <Switch>
+                            <Route path="/contest/:id">
+                                <ContestViewer Cookies={cookies} Logout={logOut} />
+                            </Route>
                             <Route path='/manager/contest/:id'>
                                 <ManageContest Cookies={cookies}/>
                             </Route>
@@ -48,6 +51,7 @@ function App() {
                             <Route path="/">
                                 <Home Cookies={cookies} Logout={logOut} />
                             </Route>
+
                         </Switch>
                     </div>
                 </Router>

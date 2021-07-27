@@ -1,3 +1,4 @@
+
 const path = require('path');
 const fs = require('fs');                                                                           // file system
 const { exec } = require('child_process');                                                          // for executing the programs
@@ -33,7 +34,6 @@ function evaluateSubtasks(compiled, result, taskName){
     return sum / total * 100;
 }
 function evaluateSubtasksFully(compiled, result, taskName){
-    if(!compiled) return 0.0;
     const pth = path.join(__dirname, './tasks/' + taskName + '/info.json');                         // path to info.json
     const info = require(pth);
     const subtasks = info.subtasks;
@@ -44,7 +44,7 @@ function evaluateSubtasksFully(compiled, result, taskName){
         var th = subtasks[i].points;
         total += th;
         for(var j = 0; j < subtasks[i].tests.length; j++){
-            if(result[subtasks[i].tests[j] + 1].points == 0) {
+            if(!compiled || result[subtasks[i].tests[j] + 1].points == 0) {
                 th = 0;
                 break;
             }

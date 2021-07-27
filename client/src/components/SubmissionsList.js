@@ -26,7 +26,7 @@ const SubmissionsList = (props) => {
         }
     });
 
-    var ret = submissions.map(sub => (<OneSubmissionResult key={sub.index} Submission={sub}/>));
+    var ret = submissions.map(sub => (<OneSubmissionResult ShowUsername={false} key={sub.index} Submission={sub}/>));
     return (
         <table className="submissionListTable">
             {ret}
