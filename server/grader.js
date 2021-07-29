@@ -133,8 +133,8 @@ function checkQueue(){
             currentProcesses--;
             if(data.error){
                 removeFile(ths.codePath).then(() => {                                               // before returning, removes .cpp file
-                    setSubmissionAsUncompiled(ths.id, data.error);
-                    ths.returnVerdict(ths.id, data.error, false, ths.taskName, ths.username);
+                    setSubmissionAsUncompiled(ths.id, data.stderr);
+                    ths.returnVerdict(ths.id, data.stderr, false, ths.taskName, ths.username);
                 });
             }else{
                 compiled(ths.taskInfo, ths.id, ths.execPath, ths.codePath, ths.taskName, ths.returnVerdict, ths.username, ths.needsChecker);

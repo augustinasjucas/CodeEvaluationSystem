@@ -187,6 +187,7 @@ function getTask(taskName){                                                     
 }
 function doesUserHavePermissionToTask(taskName, username){                          // finds out wether a user can access a task
     return new Promise((resolve, reject) => {
+        resolve(true);
         var pathToInfo = path.join(__dirname, 'tasks/' + taskName + '/info.json');
         if(fs.existsSync(pathToInfo)) {
             var info = require(pathToInfo);
@@ -515,6 +516,72 @@ function getContestData(contestID){
         });
     });
 }
+function getScoreForTask(username, task){
+    return new Promise((resolve, reject) => {
+        dbPool.query('SELECT MAX(score) AS score FROM user_submissions_' + username + ' WHERE task=($1)' , [task], (err, res) => {
+            if(err ) {
+                console.log('DB error:' + err);
+                return ;
+            }
+            if(!res.rows[0].score){
+                resolve(0);
+                return ;
+            }
+            resolve(res.rows[0].score);
+        });
+    });
+}
+function getAllUsers(){
+    return new Promise((resolve, reject) => {
+        dbPool.query('SELECT * FROM users' , [], (err, res) => {
+            if(err ) {
+                console.log('DB error:' + err);
+                return ;
+            }
+            resolve(res.rows);
+        });
+    });
+}
+function getScoreForTaskHere(user, task, i, j){
+    return new Promise((resolve, reject) => {
+        getScoreForTask(user, task).then((score) => {
+            resolve({score: score, i: i, j: j});
+        });
+    });
+}
+async function getLead(users, tasks){
+    var ret = [];
+    console.log('get lead: ');
+    console.log(tasks);
+    console.log(users);
+    for(var i = 0; i < users.length; i++){
+        var ths = [];
+        for(var j = 0; j < tasks.length; j++){
+            await getScoreForTaskHere(users[i], tasks[j], i, j).then((res) => {
+                ths[res.j] = res.score;
+            });
+        }
+        ret[i] = ths;
+    }
+    return new Promise((resolve, reject) => {
+        resolve(ret);
+    });
+}
+function getLeaderboard(contest){
+    return new Promise((resolve, reject) => {
+        getAllTasksOfContest(contest).then((data) => {
+            var tasks = data.map((task) => task.taskname);
+            getAllUsers().then((users1) => {
+                var users = users1.map((user) => user.username);
+                getLead(users, tasks).then((ret) => {
+                    resolve({leaderboard: ret, users: users, tasks: tasks});
+                });
+            });
+
+        });
+    });
+
+}
 module.exports = {
     getLastSubmissionNumber,
     addSubmission,
@@ -539,5 +606,7 @@ module.exports = {
     getAllContests,
     changeContestHiding,
     getAllUnhiddenContests,
-    getContestData
+    getContestData,
+    getScoreForTask,
+    getLeaderboard
 }

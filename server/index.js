@@ -52,6 +52,8 @@ function getTheSubmissionData(ID, result, compiled, taskName, username){        
     db.addSubmission(ID, compiled, result, pathToCpp, taskName, username, grader.evaluateSubtasks(compiled, result, taskName), grader.evaluateSubtasksFully(compiled, result, taskName));
     console.log('evaluated the submission ' + ID + ': ');
     console.log(result);
+    console.log('stringified result:');
+    console.log(JSON.stringify(result));
     console.log('-----');
 }
 
@@ -71,18 +73,18 @@ app.post('/submit', function(req, res) {
                 res.send({});
                 return ;
             }
-            // db.doesUserHavePermissionToTask(taskName, username).then((has) => {
-            //     if(!has){
-            //         res.send({});
-            //         return ;
-            //     }
+            db.doesUserHavePermissionToTask(taskName, username).then((has) => {
+                if(!has){
+                    res.send({});
+                    return ;
+                }
                 var curNum = currentSubmissionNumber++;
                 res.send({submissionNumer: curNum});
                 db.addSubmission(curNum, false, [], '', taskName, username, -1, []);
                 grader.createFile(path.join(__dirname, 'database/codes/' + curNum + '.cpp'), thisCode).then( () => {
                     grader.runCode(thisCode, taskName, curNum, username, getTheSubmissionData);
                 });
-            //});
+            });
         });
     });
 });
@@ -101,15 +103,15 @@ app.post('/getSubmissions', function(req, res) {
                 res.send([]);
                 return ;
             }
-            // db.doesUserHavePermissionToTask(taskName, username).then((has) => {
-            //     if(!has){
-            //         res.send([]);
-            //         return ;
-            //     }
+            db.doesUserHavePermissionToTask(taskName, username).then((has) => {
+                if(!has){
+                    res.send([]);
+                    return ;
+                }
                 db.findSubmissions(username, taskName).then((data) => {
                     res.send(data);
                 });
-            //});
+            });
         });
     });
 });
@@ -160,15 +162,15 @@ app.post('/getTaskData', function(req, res) {
             res.send({});
             return ;
         }
-        // db.doesUserHavePermissionToTask(taskName, username).then((has) => {
-        //     if(!has){
-        //         res.send({});
-        //         return ;
-        //     }
+        db.doesUserHavePermissionToTask(taskName, username).then((has) => {
+            if(!has){
+                res.send({});
+                return ;
+            }
             db.getTask(taskName).then((data) => {
                 res.send(data);
             });
-        //});
+        });
     });
 });
 app.post('/getUserTasks', function(req, res) {
@@ -199,7 +201,6 @@ app.post('/register', function(req, res) {
     var firstName = req.body.firstName;
     var lastName = req.body.lastName;
     db.registerUser(username, password, firstName, lastName).then((good) => {
-        console.log('send ' + good);
         res.send({mes: good});
     });
 });
@@ -238,8 +239,6 @@ app.post('/getAllContests', (req, res) => {
                 return ;
             }
             db.getAllContests().then((data) => {
-                console.log('siunciuam: ');
-                console.log(data);
                 res.send(data);
             });
         });
@@ -489,29 +488,35 @@ app.post('/getNeededTasksOfContestUser', (req, res) => {
             res.send([]);
             return ;
         }
-        db.checkIfUserIsAdmin(username).then((is) => {
-            if(!is){
+        db.checkIfContestExists(contestID).then((exists) =>{
+            if(!exists){
                 res.send([]);
                 return ;
             }
-            db.checkIfContestExists(contestID).then((exists) =>{
-                if(!exists){
-                    res.send([]);
-                    return ;
-                }
-                db.getAllTasksOfContest(contestID).then((contestTasks) => {
-                    changeToUserDataTasks(contestTasks).then((ret) => {
-                        console.log('send');
-                        console.log(ret);
-                        res.send(ret);
-                    });
-
+            db.getAllTasksOfContest(contestID).then((contestTasks) => {
+                changeToUserDataTasks(contestTasks).then((ret) => {
+                    res.send(ret);
                 });
-            });
 
+            });
         });
     });
 });
+app.post('/getLeaderboard', (req, res) => {
+    var username = req.body.username;
+    var password = req.body.password;
+    var contest = req.body.contestID;
+    db.findIfUserExists(username, password).then((exists) => {
+        if(!exists){
+            res.send([]);
+            return ;
+        }
+        db.getLeaderboard(contest).then((data) => {
+            res.send(data);
+        });
+    });
+});
+
 /*
 // All other GET requests not handled before will return our React app. Uncomment this before deploying the WHOLE app.
 app.get('*', (req, res) => {

@@ -6,6 +6,7 @@ import { CopyBlock, atomOneLight as theme } from "react-code-blocks";
 import SubtasksViewer from './SubtasksViewer'
 import Menu from './Menu.js'
 const ViewSubmission = (props) => {
+    const convertToBr = (string) => string.split('\n').map((item, index) => (index === 0) ? item : [<br key={index} />, item])
     const [submissionOnScreen, changeSubmissionOnScreen] = useState(-1);
     const [result, changeResult] = useState({subtasks: [], result: -1, code: '', score: -1});
     const [isAdmin, changeIsAdmin] = useState(false);
@@ -52,7 +53,9 @@ const ViewSubmission = (props) => {
     }else{
         var resultPart;
         if(!result.compiled){
-            resultPart = (<div>Compilation error: <br /> {JSON.stringify(result.result)} </div>);
+            console.log('result: ');
+            console.log(result);
+            resultPart = (<div>Compilation error: <br /><code><pre> {(result.result == -1 ? '' : convertToBr(result.result))} </pre></code></div>);
         }else{
             resultPart = (<TestViewer Tests={result.result} /> );
         }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Api from '../api.js'
+import Leaderboard from './Leaderboard.js'
 
 const ManageContest = (props) => {
 
@@ -11,6 +12,7 @@ const ManageContest = (props) => {
     const [availableTasks, changeAvailableTasks] = useState([]);
     const [selectedTask, changeSelectedTask] = useState('');
     const [remTask, changeRemTask] = useState('');
+    const [leaderboard, changeLeaderboard] = useState({leaderboard: [], users: [], tasks: []});
 
     const makeHidden = () => {
         var username = (props.Cookies.get('username') ? props.Cookies.get('username') : '');
@@ -58,7 +60,13 @@ const ManageContest = (props) => {
             console.log(data);
             changeContest(data);
         });
+        Api.getLeaderboard(username, password, id).then((data) => {
+            console.log('getLeaderboard:');
+            console.log(data);
+            changeLeaderboard(data);
+        });
     }
+
     useEffect(() => {
         if(contestOnScreen === id){
             return ;
@@ -69,6 +77,7 @@ const ManageContest = (props) => {
     var selector = availableTasks.map((task) => (<option value={task}> {task} </option>));
     var myTasksView = myTasks.map((task) => (<span>{task}, </span>));
     var myTasksDel = myTasks.map((task) =>  (<option value={task.taskname}> {task} </option>));
+    var leaderboardView = (<Leaderboard Leaderboard={leaderboard} Cookies={props.Cookies} />);
     return (
         <div>
             Managing contest {id}, name: {contest.name} <br />  <br />
@@ -89,6 +98,9 @@ const ManageContest = (props) => {
             Contest is {(contest.hidden ? 'hidden' : 'visible')}
             <button onClick={makeHidden}>Hide contest!</button>
             <button onClick={makeVisible}>Unhide contest!</button>
+            <br />
+            <br />
+            {leaderboardView}
 
         </div>
     );

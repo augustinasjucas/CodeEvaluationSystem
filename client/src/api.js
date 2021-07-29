@@ -313,5 +313,20 @@ class Api {
                 });
         });
     }
+    static getLeaderboard(username, password, id){
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({username: username, password: password, contestID: id})
+        };
+        return new Promise ( (resolve, reject) => {
+
+            fetch('/getLeaderboard', requestOptions)
+                .then(response => response.json())
+                .then((data) => {
+                    resolve(data);
+                });
+        });
+    }
 }
 export default Api;
