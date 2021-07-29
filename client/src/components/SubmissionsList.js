@@ -7,6 +7,8 @@ const SubmissionsList = (props) => {
     const [submissions, changeSubmissions] = useState([]);
     const getSubmissions = (username, password, taskName) => {
         Api.getSubmissions(taskName, username, password).then((data) => {
+            console.log('receved submissions:');
+            console.log(data);
             changeSubmissions(data.sort((a, b) => {return a.index < b.index}));
         });
     };

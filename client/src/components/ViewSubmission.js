@@ -53,8 +53,6 @@ const ViewSubmission = (props) => {
     }else{
         var resultPart;
         if(!result.compiled){
-            console.log('result: ');
-            console.log(result);
             resultPart = (<div>Compilation error: <br /><code><pre> {(result.result == -1 ? '' : convertToBr(result.result))} </pre></code></div>);
         }else{
             resultPart = (<TestViewer Tests={result.result} /> );
@@ -77,7 +75,7 @@ const ViewSubmission = (props) => {
                 <div className="compilationResultPart">Compilation: {result.compiled ? 'successful' : 'unsuccessful'} </div>
                 {subtaskPart}
                 <br /><br />
-                {resultPart} <br />
+                {/*resultPart*/} <br />
                 Code: <br />
                 <CopyBlock
                   text={result.code}

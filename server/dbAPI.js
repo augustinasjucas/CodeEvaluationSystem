@@ -50,10 +50,12 @@ function addSubmission(index, compiled, result, codePath, taskName, username, sc
                                                                             // username - person, who submitted
                                                                             // score - score for this subtask
                                                                             // subtasks - an array of subtasks during this submission
+
    // TODO: also add user id ; do not add index (make it auto increment)
    const pth = path.join(__dirname, './tasks/' + taskName + '/info.json');                         // path to info.json
    const info = require(pth);
    const nameOfTheTask = info.name;
+   console.log('Adding submission to DB. score: ' + score);
    dbPool.query('DELETE FROM submissions WHERE index=' + index + ';', (err, rs) => {
        if(err){
            console.log('DB error occured: ');
@@ -487,7 +489,7 @@ function changeScore(index, score){                                             
                 }
                 var usr = result.rows[0].username;
 
-                dbPool.query('UPDATE user_submissions_' + usr + ' SET score=($1)', [score], (err, result) => {
+                dbPool.query('UPDATE user_submissions_' + usr + ' SET score=($1) WHERE index=($2)', [score, index], (err, result) => {
                     if (err){
                         console.log('DB error: ' + err);
                         resolve(false);

@@ -55,7 +55,7 @@ const ManagerPage = (props) => {
             </table>
 
             <br /> <br />
-            <table>
+            <table className="submissionListTable">
                 {submissionsSelector}
             </table>
         </div>

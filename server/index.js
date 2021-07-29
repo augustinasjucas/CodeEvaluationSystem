@@ -32,11 +32,14 @@ function findDifference(all, one1){
     }
     return ret;
 }
-async function changeToUserDataTasks (tasks){
+async function changeToUserDataTasks (tasks, username){
     var ret = [];
     for(var i = 0; i < tasks.length; i++){
         await db.getTask(tasks[i].taskname).then((task) => {
-            ret[i] = {name: task.name, id: tasks[i].taskname};
+            ret[i] = {name: task.name, id: tasks[i].taskname, score: -1};
+        });
+        await db.getScoreForTask(username, tasks[i].taskname).then((score) => {
+            ret[i].score = score;
         });
     }
     return new Promise((resolve, reject) => {
@@ -494,7 +497,7 @@ app.post('/getNeededTasksOfContestUser', (req, res) => {
                 return ;
             }
             db.getAllTasksOfContest(contestID).then((contestTasks) => {
-                changeToUserDataTasks(contestTasks).then((ret) => {
+                changeToUserDataTasks(contestTasks, username).then((ret) => {
                     res.send(ret);
                 });
 

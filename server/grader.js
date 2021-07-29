@@ -43,13 +43,15 @@ function evaluateSubtasksFully(compiled, result, taskName){
     for(var i = 0; i < subtasks.length; i++){
         var th = subtasks[i].points;
         total += th;
+        var passed = 0;
         for(var j = 0; j < subtasks[i].tests.length; j++){
             if(!compiled || result[subtasks[i].tests[j] + 1].points == 0) {
                 th = 0;
                 break;
             }
+            passed++;
         }
-        ret.push({...subtasks[i], received: th});
+        ret.push({...subtasks[i], received: th, passed: passed});
         sum += th;
     }
     return ret;

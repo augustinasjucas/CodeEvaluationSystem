@@ -118,3 +118,49 @@ code {
 .sampleInATask td, .sampleInATask th{
     border: 1px solid black;
 }
+
+.subtaskResultRow td, .testResultRow td, .submissionResultRow td{
+    text-align: center;
+    margin: 2%;
+    border-radius: 2px;
+    border: 1px solid black;
+}
+.subtaskIndex{
+    width: 30%;
+}
+.subtaskPoints{
+    width: 40%;
+}
+.subtaskFirstFailed{
+    width: 30%;
+}
+.solved{
+    background-color: green;
+}
+.subtasksTable, .testResultsTable{
+    width: 40%;
+}
+.unsolved{
+    background-color: red;
+}
+.submissionListTable{
+    width: 50%;
+}
+.submissionResultRow td{
+    color: black;
+}
+.submissionResultIndex{
+    width:5%;
+}
+.submissionResultUsername{
+    width: 20%;
+}
+.submissionResultNameOfTask{
+    width: 30%;
+}
+.submissionResultScore{
+    width: 15%;
+}
+.submissionResultTime{
+    width: 40%;
+}
