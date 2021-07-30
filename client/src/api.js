@@ -2,7 +2,7 @@ class Api {
     constructor (){
 
     }
-    DB LINK = 'localhost:3000';
+    DB_LINK = 'localhost:3000';
     static async checkIfUserExists (username, password) {
         const requestOptions = {                                    // creating the request
             method: 'POST',
