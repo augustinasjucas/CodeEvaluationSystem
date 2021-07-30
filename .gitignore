@@ -7,7 +7,7 @@ client/node_modules
 server/tasks/vagys
 server/tasks/robotai
 server/dbPool.js
-
+server/additionalPrograms/comparison
 # Logs
 logs
 *.log

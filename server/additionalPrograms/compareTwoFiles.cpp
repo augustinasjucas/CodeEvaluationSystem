@@ -1,3 +1,4 @@
+// g++ -std=c++17 -o comparison -O3 compareTwoFiles.cpp
 /*#include <bits/stdc++.h>
 #pragma GCC optimize("O3")
 using namespace std;
