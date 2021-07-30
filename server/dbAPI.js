@@ -16,6 +16,8 @@ function getLastSubmissionNumber(){                                         // r
             [],
             (err, result) => {
                 if (err) reject();
+                console.log('result:');
+                console.log(result);
                 const rows = result.rows;
                 console.log(' submissions row length: ' + rows.length);
                 if (rows.length == 0) resolve(0);
