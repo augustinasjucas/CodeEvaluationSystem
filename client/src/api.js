@@ -2,7 +2,7 @@ class Api {
     constructor (){
 
     }
-
+    DB LINK = 'localhost:3000';
     static async checkIfUserExists (username, password) {
         const requestOptions = {                                    // creating the request
             method: 'POST',
@@ -10,7 +10,7 @@ class Api {
             body: JSON.stringify({username: username, password: password})
         };
         var ret = false;
-        await fetch('/login', requestOptions)                           // sends POST request to server with the code
+        await fetch(DB_LINK + '/login', requestOptions)                           // sends POST request to server with the code
             .then(response => response.json())                          // converts response to json
             .then((data) => {
                 ret = data;
@@ -31,7 +31,7 @@ class Api {
                 body: JSON.stringify({username: username, password: password})
             };
             var ret = false;
-            fetch('/getUserTasks', requestOptions)
+            fetch(DB_LINK + '/getUserTasks', requestOptions)
                 .then(response => response.json())
                 .then((data) => {
                     ret = data;
@@ -46,7 +46,7 @@ class Api {
             body: JSON.stringify({taskName: taskName, username: username, password: password})
         };
         return new Promise((resolve, reject) => {
-            fetch('/getTaskData', requestOptions)                       // sends POST request to server with the code
+            fetch(DB_LINK + '/getTaskData', requestOptions)                       // sends POST request to server with the code
                 .then(response => response.json())                      // converts respinse to json
                 .then((data) => {
                     if(!data.statement) resolve({});
@@ -61,7 +61,7 @@ class Api {
             body: JSON.stringify({submissionID: index, username: username, password: password})
         };
         return new Promise((resolve, reject) => {
-            fetch('/getResult', requestOptions)                         // sends POST request to server with the code
+            fetch(DB_LINK + '/getResult', requestOptions)                         // sends POST request to server with the code
                 .then(response => response.json())                      // converts response to json
                 .then((data) => {
                     resolve(data);
@@ -76,7 +76,7 @@ class Api {
             body: JSON.stringify({code: code, taskName: task, username: username, password: password})
         };
         return new Promise ( (resolve, reject) => {
-            fetch('/submit', requestOptions)                            // sends POST request to server with the code
+            fetch(DB_LINK + '/submit', requestOptions)                            // sends POST request to server with the code
                 .then(response => response.json())                      // converts respinse to json
                 .then((data) => {
                     resolve(data);
@@ -90,7 +90,7 @@ class Api {
             body: JSON.stringify({submissionID: id, username: username, password: password})
         };
         return new Promise ( (resolve, reject) => {
-            fetch('/getResult', requestOptions)
+            fetch(DB_LINK + '/getResult', requestOptions)
                 .then(response => response.json())
                 .then((data) => {
                     console.log('THE PRIMARY DATA IS: ');
@@ -106,7 +106,7 @@ class Api {
             body: JSON.stringify({username: username, password: password, taskName: task})
         };
         return new Promise ( (resolve, reject) => {
-            fetch('/getSubmissions', requestOptions)
+            fetch(DB_LINK + '/getSubmissions', requestOptions)
                 .then(response => response.json())
                 .then((data) => {
                     resolve(data);
@@ -125,7 +125,7 @@ class Api {
                 return ;
             }
 
-            fetch('/register', requestOptions)
+            fetch(DB_LINK + '/register', requestOptions)
                 .then(response => response.json())
                 .then((data) => {
                     console.log('Resolve ' + data);
@@ -141,7 +141,7 @@ class Api {
         };
         return new Promise ( (resolve, reject) => {
 
-            fetch('/createNewContest', requestOptions)
+            fetch(DB_LINK + '/createNewContest', requestOptions)
                 .then(response => response.json())
                 .then((data) => {
                     resolve(data);
@@ -157,7 +157,7 @@ class Api {
 
         return new Promise ( (resolve, reject) => {
 
-            fetch('/getAllContests', requestOptions)
+            fetch(DB_LINK + '/getAllContests', requestOptions)
                 .then(response => response.json())
                 .then((data) => {
                     resolve(data);
@@ -172,7 +172,7 @@ class Api {
         };
         return new Promise ( (resolve, reject) => {
 
-            fetch('/getNeededTasksOfContest', requestOptions)
+            fetch(DB_LINK + '/getNeededTasksOfContest', requestOptions)
                 .then(response => response.json())
                 .then((data) => {
                     resolve(data);
@@ -187,7 +187,7 @@ class Api {
         };
         return new Promise ( (resolve, reject) => {
 
-            fetch('/addTaskToContest', requestOptions)
+            fetch(DB_LINK + '/addTaskToContest', requestOptions)
                 .then(response => response.json())
                 .then((data) => {
                     resolve(data);
@@ -202,7 +202,7 @@ class Api {
         };
         return new Promise ( (resolve, reject) => {
 
-            fetch('/removeTaskFromContest', requestOptions)
+            fetch(DB_LINK + '/removeTaskFromContest', requestOptions)
                 .then(response => response.json())
                 .then((data) => {
                     resolve(data);
@@ -217,7 +217,7 @@ class Api {
         };
         return new Promise ( (resolve, reject) => {
 
-            fetch('/getAllSubmissions', requestOptions)
+            fetch(DB_LINK + '/getAllSubmissions', requestOptions)
                 .then(response => response.json())
                 .then((data) => {
                     resolve(data);
@@ -232,7 +232,7 @@ class Api {
         };
         return new Promise ( (resolve, reject) => {
 
-            fetch('/changeScore', requestOptions)
+            fetch(DB_LINK + '/changeScore', requestOptions)
                 .then(response => response.json())
                 .then((data) => {
                     if(data){
@@ -248,7 +248,7 @@ class Api {
             body: JSON.stringify({username: username, password: password})
         };
         return new Promise ( (resolve, reject) => {
-            fetch('/checkIfAdmin', requestOptions)
+            fetch(DB_LINK + '/checkIfAdmin', requestOptions)
                 .then(response => response.json())
                 .then((data) => {
                     resolve(data);
@@ -262,7 +262,7 @@ class Api {
             body: JSON.stringify({username: username, password: password})
         };
         return new Promise ( (resolve, reject) => {
-            fetch('/getAllContestsAsSolver', requestOptions)
+            fetch(DB_LINK + '/getAllContestsAsSolver', requestOptions)
                 .then(response => response.json())
                 .then((data) => {
                     resolve(data);
@@ -276,7 +276,7 @@ class Api {
             body: JSON.stringify({username: username, password: password, contestID: contestID, newVal: val})
         };
         return new Promise ( (resolve, reject) => {
-            fetch('/changeHidingOfContest', requestOptions)
+            fetch(DB_LINK + '/changeHidingOfContest', requestOptions)
                 .then(response => response.json())
                 .then((data) => {
                     resolve(data);
@@ -290,7 +290,7 @@ class Api {
             body: JSON.stringify({username: username, password: password, contestID: contestID})
         };
         return new Promise ( (resolve, reject) => {
-            fetch('/getContestData', requestOptions)
+            fetch(DB_LINK + '/getContestData', requestOptions)
                 .then(response => response.json())
                 .then((data) => {
                     resolve(data);
@@ -306,7 +306,7 @@ class Api {
         };
         return new Promise ( (resolve, reject) => {
 
-            fetch('/getNeededTasksOfContestUser', requestOptions)
+            fetch(DB_LINK + '/getNeededTasksOfContestUser', requestOptions)
                 .then(response => response.json())
                 .then((data) => {
                     resolve(data);
@@ -321,7 +321,7 @@ class Api {
         };
         return new Promise ( (resolve, reject) => {
 
-            fetch('/getLeaderboard', requestOptions)
+            fetch(DB_LINK + '/getLeaderboard', requestOptions)
                 .then(response => response.json())
                 .then((data) => {
                     resolve(data);
