@@ -124,6 +124,7 @@ function checkQueue(){
     if(queue.length == 0) return ;
     if(queue[0].memory * 1024 * 1024 + usedMemory > AVAILABLE_MEMORY) return ;
     if(currentProcesses+1 > AVAILABLE_THREADS) return ;                                                                    // ALLOWS JUST ONE TO BE PROCCESED AT A TIME
+  
     currentProcesses++;
     usedMemory += queue[0].memory * 1024 * 1024;
     var ths = queue[0];
@@ -166,7 +167,6 @@ function compiled(info, ID, execPath, codePath, taskName, returnVerdict, usernam
 function runTest(inputPath, execPath, timeLimit, memoryLimit){                                // runs the test with given
                                                                                                     // test and returns
                                                                                                     // {error, stdout_file, stderr}
-
     var ret = {error: null, stdout: {}, stderr: {}};                                                // initializes the return value
     var curNum = currentSubmissionNumber++;
     var outputName = path.join(__dirname, '/submissionsFolder/outputOf' + curNum + '.out');
@@ -230,7 +230,6 @@ function extractResult(test, correctOutput, needsChecker, taskName, inputPath){ 
         }else{
 
             let command = 'echo "' + inputPath + ' ' +   test.stdout + '" | ' + path.join(__dirname, '/tasks/' + taskName + '/checker');
-            console.log('komanda: ' + command);
             executeCommand(command, 10000, 64)
                 .then((data) => {
                     removeFile(test.stdout).then(() => {
