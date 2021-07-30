@@ -7,6 +7,8 @@ const SubmissionsList = (props) => {
     const [submissions, changeSubmissions] = useState([]);
     const getSubmissions = (username, password, taskName) => {
         Api.getSubmissions(taskName, username, password).then((data) => {
+            console.log('receved submissions:');
+            console.log(data);
             changeSubmissions(data.sort((a, b) => {return a.index < b.index}));
         });
     };
@@ -26,7 +28,7 @@ const SubmissionsList = (props) => {
         }
     });
 
-    var ret = submissions.map(sub => (<OneSubmissionResult key={sub.index} Submission={sub}/>));
+    var ret = submissions.map(sub => (<OneSubmissionResult ShowUsername={false} key={sub.index} Submission={sub}/>));
     return (
         <table className="submissionListTable">
             {ret}

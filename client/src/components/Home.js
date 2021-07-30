@@ -3,16 +3,23 @@ import Api from '../api.js'
 import { Link } from 'react-router-dom';
 import Menu from './Menu.js';
 import TaskSelector from './TaskSelector.js'
+import ContestSelector from './ContestSelector'
 const Home = (props) => {
-    const [taskNames, changeTaskNames] = useState([]);  //
+    const [contests, changeContests] = useState([]);  //
     useEffect(() => {
-        Api.getAllTaskNames(props.Cookies).then((data) => changeTaskNames(data));
+        var username = (props.Cookies.get('username') ? props.Cookies.get('username')  : '');
+        var password = (props.Cookies.get('password') ? props.Cookies.get('password')  : '');
+        Api.getAllContestsSolver(username, password).then((data) => {
+            console.log('downloaded contests: ');
+            console.log(data);
+            changeContests(data)
+        });
     }, []);
 
     return (
         <div className="homePageDiv">
             <Menu Username={props.Cookies.get('username')} Logout={props.Logout} />
-            <TaskSelector TaskNames={taskNames} />
+            <ContestSelector ContestList={contests} />
         </div>
     );
 

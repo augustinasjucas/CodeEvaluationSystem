@@ -8,6 +8,9 @@ const SubtasksViewer = (props) => {
         <div>
             Subtask results:
             <table className="subtasksTable">
+                <th>Index</th>
+                <th>Score</th>
+                <th>Tests passed</th>
                 {ret}
             </table>
         </div>

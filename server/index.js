@@ -23,7 +23,29 @@ console.log('currentSubmissionNumber = ' + currentSubmissionNumber);
 // Have Node serve the files for our built React app. Uncomment this before deploying the WHOLE app.
 app.use(express.static(path.resolve(__dirname, '../client/build')));
 */
-
+function findDifference(all, one1){
+    one = one1.map((a) => a.taskname);
+    var ret = [];
+    for(var i = 0; i < all.length; i++){
+        if(one.includes(all[i])) continue;
+        ret.push(all[i]);
+    }
+    return ret;
+}
+async function changeToUserDataTasks (tasks, username){
+    var ret = [];
+    for(var i = 0; i < tasks.length; i++){
+        await db.getTask(tasks[i].taskname).then((task) => {
+            ret[i] = {name: task.name, id: tasks[i].taskname, score: -1};
+        });
+        await db.getScoreForTask(username, tasks[i].taskname).then((score) => {
+            ret[i].score = score;
+        });
+    }
+    return new Promise((resolve, reject) => {
+        resolve(ret);
+    });
+}
 function getTheSubmissionData(ID, result, compiled, taskName, username){                            // gets the submission data of `ID` submission
                                                                                                     // and writes it to the DB
     var pathToCpp = path.join(__dirname, 'database/codes/' + ID + '.cpp');
@@ -33,6 +55,8 @@ function getTheSubmissionData(ID, result, compiled, taskName, username){        
     db.addSubmission(ID, compiled, result, pathToCpp, taskName, username, grader.evaluateSubtasks(compiled, result, taskName), grader.evaluateSubtasksFully(compiled, result, taskName));
     console.log('evaluated the submission ' + ID + ': ');
     console.log(result);
+    console.log('stringified result:');
+    console.log(JSON.stringify(result));
     console.log('-----');
 }
 
@@ -180,7 +204,6 @@ app.post('/register', function(req, res) {
     var firstName = req.body.firstName;
     var lastName = req.body.lastName;
     db.registerUser(username, password, firstName, lastName).then((good) => {
-        console.log('send ' + good);
         res.send({mes: good});
     });
 });
@@ -210,17 +233,289 @@ app.post('/getAllContests', (req, res) => {
     var password = req.body.password;
     db.findIfUserExists(username, password).then((exists) => {
         if(!exists){
-            res.send({id: -1});
+            res.send([]);
             return ;
         }
         db.checkIfUserIsAdmin(username).then((is) => {
             if(!is){
-                res.send({id: -1});
+                res.send([]);
                 return ;
             }
             db.getAllContests().then((data) => {
                 res.send(data);
             });
+        });
+    });
+});
+app.post('/getNeededTasksOfContest', (req, res) => {
+    var username = req.body.username;
+    var password = req.body.password;
+    var contestID = req.body.contestID;
+    db.findIfUserExists(username, password).then((exists) => {
+        if(!exists){
+            res.send({mine: [], missing: []});
+            return ;
+        }
+        db.checkIfUserIsAdmin(username).then((is) => {
+            if(!is){
+                res.send({mine: [], missing: []});
+                return ;
+            }
+            db.checkIfContestExists(contestID).then((exists) =>{
+                if(!exists){
+                    res.send({mine: [], missing: []});
+                    return ;
+                }
+                db.getAllTasks().then((allTasks) => {
+                    db.getAllTasksOfContest(contestID).then((contestTasks) => {
+                        res.send({mine: contestTasks.map((task)=>task.taskname), missing: findDifference(allTasks, contestTasks)});
+                    });
+                });
+            });
+
+        });
+    });
+});
+app.post('/addTaskToContest', (req, res) => {
+    var username = req.body.username;
+    var password = req.body.password;
+    var contestID = req.body.contestID;
+    var taskName = req.body.taskName;
+    db.findIfUserExists(username, password).then((exists) => {
+        if(!exists){
+            res.send(false);
+            return ;
+        }
+        db.checkIfUserIsAdmin(username).then((is) => {
+            if(!is){
+                res.send(false);
+                return ;
+            }
+            db.checkIfContestExists(contestID).then((exists) =>{
+                if(!exists){
+                    res.send(false);
+                    return ;
+                }
+                db.doesTaskExists(taskName).then((exists) => {
+                    if(!exists){
+                        res.send(false);
+                        return ;
+                    }
+                    db.addTaskToContest(taskName, contestID).then((good) => {
+                        res.send(good);
+                    });
+                });
+            });
+
+        });
+    });
+});
+
+app.post('/removeTaskFromContest', (req, res) => {
+    var username = req.body.username;
+    var password = req.body.password;
+    var contestID = req.body.contestID;
+    var taskName = req.body.taskName;
+    db.findIfUserExists(username, password).then((exists) => {
+        if(!exists){
+            res.send(false);
+            return ;
+        }
+        db.checkIfUserIsAdmin(username).then((is) => {
+            if(!is){
+                res.send(false);
+                return ;
+            }
+            db.checkIfContestExists(contestID).then((exists) =>{
+                if(!exists){
+                    res.send(false);
+                    return ;
+                }
+                db.doesTaskExists(taskName).then((exists) => {
+                    if(!exists){
+                        res.send(false);
+                        return ;
+                    }
+                    db.removeTaskFromContest(taskName, contestID).then((good) => {
+                        res.send(good);
+                    });
+                });
+            });
+
+        });
+    });
+});
+
+app.post('/getAllSubmissions', (req, res) => {
+    var username = req.body.username;
+    var password = req.body.password;
+    db.findIfUserExists(username, password).then((exists) => {
+        if(!exists){
+            res.send([]);
+            return ;
+        }
+        db.checkIfUserIsAdmin(username).then((is) => {
+            if(!is){
+                res.send([]);
+                return ;
+            }
+            db.getAllSubmissions().then((data) => {
+                res.send(data);
+            });
+
+        });
+    });
+});
+app.post('/changeScore', (req, res) => {
+    var username = req.body.username;
+    var password = req.body.password;
+    var submission = req.body.submissionID;
+    var newV = req.body.newScore;
+    if(isNaN(newV)){
+        res.send(false);
+        return ;
+    }
+    var newScore = +newV;
+    db.findIfUserExists(username, password).then((exists) => {
+        if(!exists){
+            res.send(false);
+            return ;
+        }
+        db.checkIfUserIsAdmin(username).then((is) => {
+            if(!is){
+                res.send(false);
+                return ;
+            }
+            db.findIfSubExists(submission).then((exists) => {
+                if(!exists){
+                    res.send(false);
+                    return ;
+                }
+                db.changeScore(submission, newScore).then((good) =>{
+                    res.send(good);
+                })
+            });
+
+        });
+    });
+});
+
+
+app.post('/checkIfAdmin', (req, res) => {
+    var username = req.body.username;
+    var password = req.body.password;
+    db.findIfUserExists(username, password).then((exists) => {
+        if(!exists){
+            res.send(false);
+            return ;
+        }
+        db.checkIfUserIsAdmin(username).then((is) => {
+            res.send(is);
+        });
+    });
+});
+
+app.post('/getAllContestsAsSolver', (req, res) => {
+    var username = req.body.username;
+    var password = req.body.password;
+    db.findIfUserExists(username, password).then((exists) => {
+        if(!exists){
+            res.send([]);
+            return ;
+        }
+        db.getAllUnhiddenContests().then((data) => {
+            res.send(data);
+        });
+    });
+});
+app.post('/changeHidingOfContest', (req, res) => {
+    var username = req.body.username;
+    var password = req.body.password;
+    var contestID = req.body.contestID;
+    var newVal = req.body.newVal;
+    db.findIfUserExists(username, password).then((exists) => {
+        if(!exists){
+            res.send(false);
+            return ;
+        }
+        db.checkIfUserIsAdmin(username).then((is) => {
+            if(!is){
+                res.send(false);
+                return ;
+            }
+            db.checkIfContestExists(contestID).then((exists) =>{
+                if(!exists){
+                    res.send(false);
+                    return ;
+                }
+                db.changeContestHiding(contestID, newVal);
+            });
+
+        });
+    });
+});
+app.post('/getContestData', (req, res) => {
+    var username = req.body.username;
+    var password = req.body.password;
+    var contestID = req.body.contestID;
+    db.findIfUserExists(username, password).then((exists) => {
+        if(!exists){
+            res.send(false);
+            return ;
+        }
+        db.checkIfUserIsAdmin(username).then((is) => {
+            if(!is){
+                res.send(false);
+                return ;
+            }
+            db.checkIfContestExists(contestID).then((exists) =>{
+                if(!exists){
+                    res.send(false);
+                    return ;
+                }
+                db.getContestData(contestID).then((data) => {
+                    res.send(data);
+                });
+            });
+
+        });
+    });
+});
+//getNeededTasksOfContestUser
+app.post('/getNeededTasksOfContestUser', (req, res) => {
+    var username = req.body.username;
+    var password = req.body.password;
+    var contestID = req.body.contestID;
+    db.findIfUserExists(username, password).then((exists) => {
+        if(!exists){
+            res.send([]);
+            return ;
+        }
+        db.checkIfContestExists(contestID).then((exists) =>{
+            if(!exists){
+                res.send([]);
+                return ;
+            }
+            db.getAllTasksOfContest(contestID).then((contestTasks) => {
+                changeToUserDataTasks(contestTasks, username).then((ret) => {
+                    res.send(ret);
+                });
+
+            });
+        });
+    });
+});
+app.post('/getLeaderboard', (req, res) => {
+    var username = req.body.username;
+    var password = req.body.password;
+    var contest = req.body.contestID;
+    db.findIfUserExists(username, password).then((exists) => {
+        if(!exists){
+            res.send([]);
+            return ;
+        }
+        db.getLeaderboard(contest).then((data) => {
+            res.send(data);
         });
     });
 });

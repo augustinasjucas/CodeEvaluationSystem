@@ -7,6 +7,8 @@ import { Link }  from 'react-router-dom';
 
 const TaskSelector = (props) => {
     const taskNames = props.TaskNames;
+    console.log('tasknames: ');
+    console.log(taskNames);
     var taskList = taskNames.map((task) => <OneTaskSelector key={task.id} Task={task} />);
     return (<table className='taskListTable'>{taskList}</table>);
 }

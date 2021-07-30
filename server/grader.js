@@ -1,3 +1,4 @@
+
 const path = require('path');
 const fs = require('fs');                                                                           // file system
 const { exec } = require('child_process');                                                          // for executing the programs
@@ -33,7 +34,6 @@ function evaluateSubtasks(compiled, result, taskName){
     return sum / total * 100;
 }
 function evaluateSubtasksFully(compiled, result, taskName){
-    if(!compiled) return 0.0;
     const pth = path.join(__dirname, './tasks/' + taskName + '/info.json');                         // path to info.json
     const info = require(pth);
     const subtasks = info.subtasks;
@@ -43,13 +43,15 @@ function evaluateSubtasksFully(compiled, result, taskName){
     for(var i = 0; i < subtasks.length; i++){
         var th = subtasks[i].points;
         total += th;
+        var passed = 0;
         for(var j = 0; j < subtasks[i].tests.length; j++){
-            if(result[subtasks[i].tests[j] + 1].points == 0) {
+            if(!compiled || result[subtasks[i].tests[j] + 1].points == 0) {
                 th = 0;
                 break;
             }
+            passed++;
         }
-        ret.push({...subtasks[i], received: th});
+        ret.push({...subtasks[i], received: th, passed: passed});
         sum += th;
     }
     return ret;
@@ -133,8 +135,8 @@ function checkQueue(){
             currentProcesses--;
             if(data.error){
                 removeFile(ths.codePath).then(() => {                                               // before returning, removes .cpp file
-                    setSubmissionAsUncompiled(ths.id, data.error);
-                    ths.returnVerdict(ths.id, data.error, false, ths.taskName, ths.username);
+                    setSubmissionAsUncompiled(ths.id, data.stderr);
+                    ths.returnVerdict(ths.id, data.stderr, false, ths.taskName, ths.username);
                 });
             }else{
                 compiled(ths.taskInfo, ths.id, ths.execPath, ths.codePath, ths.taskName, ths.returnVerdict, ths.username, ths.needsChecker);

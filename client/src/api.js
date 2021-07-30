@@ -154,6 +154,7 @@ class Api {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({username: username, password: password})
         };
+
         return new Promise ( (resolve, reject) => {
 
             fetch('/getAllContests', requestOptions)
@@ -163,6 +164,169 @@ class Api {
                 });
         });
     }
+    static getAllTasksOfContest(username, password, id){
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({username: username, password: password, contestID: id})
+        };
+        return new Promise ( (resolve, reject) => {
 
+            fetch('/getNeededTasksOfContest', requestOptions)
+                .then(response => response.json())
+                .then((data) => {
+                    resolve(data);
+                });
+        });
+    }
+    static addTaskToContest(username, password, contestID, taskName){
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({username: username, password: password, contestID: contestID, taskName: taskName})
+        };
+        return new Promise ( (resolve, reject) => {
+
+            fetch('/addTaskToContest', requestOptions)
+                .then(response => response.json())
+                .then((data) => {
+                    resolve(data);
+                });
+        });
+    }
+    static removeTaskFromContest(username, password, contestID, taskName){
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({username: username, password: password, contestID: contestID, taskName: taskName})
+        };
+        return new Promise ( (resolve, reject) => {
+
+            fetch('/removeTaskFromContest', requestOptions)
+                .then(response => response.json())
+                .then((data) => {
+                    resolve(data);
+                });
+        });
+    }
+    static getAllSubmissions(username, password){
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({username: username, password: password})
+        };
+        return new Promise ( (resolve, reject) => {
+
+            fetch('/getAllSubmissions', requestOptions)
+                .then(response => response.json())
+                .then((data) => {
+                    resolve(data);
+                });
+        });
+    }
+    static changeScore(username, password, newScore, submission, changeFunction){
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({username: username, password: password, newScore: newScore, submissionID: submission})
+        };
+        return new Promise ( (resolve, reject) => {
+
+            fetch('/changeScore', requestOptions)
+                .then(response => response.json())
+                .then((data) => {
+                    if(data){
+                        changeFunction(newScore);
+                    }
+                });
+        });
+    }
+    static checkIfAdmin(username, password){
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({username: username, password: password})
+        };
+        return new Promise ( (resolve, reject) => {
+            fetch('/checkIfAdmin', requestOptions)
+                .then(response => response.json())
+                .then((data) => {
+                    resolve(data);
+                });
+        });
+    }
+    static getAllContestsSolver(username, password) {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({username: username, password: password})
+        };
+        return new Promise ( (resolve, reject) => {
+            fetch('/getAllContestsAsSolver', requestOptions)
+                .then(response => response.json())
+                .then((data) => {
+                    resolve(data);
+                });
+        });
+    }
+    static changeVisibility(username, password, contestID, val){
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({username: username, password: password, contestID: contestID, newVal: val})
+        };
+        return new Promise ( (resolve, reject) => {
+            fetch('/changeHidingOfContest', requestOptions)
+                .then(response => response.json())
+                .then((data) => {
+                    resolve(data);
+                });
+        });
+    }
+    static getContestData(username, password, contestID){
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({username: username, password: password, contestID: contestID})
+        };
+        return new Promise ( (resolve, reject) => {
+            fetch('/getContestData', requestOptions)
+                .then(response => response.json())
+                .then((data) => {
+                    resolve(data);
+                });
+        });
+
+    }
+    static getAllTasksOfContestUser(username, password, id){
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({username: username, password: password, contestID: id})
+        };
+        return new Promise ( (resolve, reject) => {
+
+            fetch('/getNeededTasksOfContestUser', requestOptions)
+                .then(response => response.json())
+                .then((data) => {
+                    resolve(data);
+                });
+        });
+    }
+    static getLeaderboard(username, password, id){
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({username: username, password: password, contestID: id})
+        };
+        return new Promise ( (resolve, reject) => {
+
+            fetch('/getLeaderboard', requestOptions)
+                .then(response => response.json())
+                .then((data) => {
+                    resolve(data);
+                });
+        });
+    }
 }
 export default Api;

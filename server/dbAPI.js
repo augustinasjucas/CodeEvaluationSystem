@@ -52,10 +52,12 @@ function addSubmission(index, compiled, result, codePath, taskName, username, sc
                                                                             // username - person, who submitted
                                                                             // score - score for this subtask
                                                                             // subtasks - an array of subtasks during this submission
+
    // TODO: also add user id ; do not add index (make it auto increment)
    const pth = path.join(__dirname, './tasks/' + taskName + '/info.json');                         // path to info.json
    const info = require(pth);
    const nameOfTheTask = info.name;
+   console.log('Adding submission to DB. score: ' + score);
    dbPool.query('DELETE FROM submissions WHERE index=' + index + ';', (err, rs) => {
        if(err){
            console.log('DB error occured: ');
@@ -101,7 +103,11 @@ function findSubmissions(username, task){
             'SELECT * FROM ' + tableName + ' WHERE task=($1)',
             [task],
             (err, result) => {
-                if (err) reject();
+                if (err) {
+                    console.log('DB error: ' + err);
+                    resolve([]);
+                    return ;
+                }
                 const rows = result.rows;
                 resolve(rows);
             }
@@ -185,6 +191,7 @@ function getTask(taskName){                                                     
 }
 function doesUserHavePermissionToTask(taskName, username){                          // finds out wether a user can access a task
     return new Promise((resolve, reject) => {
+        resolve(true);
         var pathToInfo = path.join(__dirname, 'tasks/' + taskName + '/info.json');
         if(fs.existsSync(pathToInfo)) {
             var info = require(pathToInfo);
@@ -277,7 +284,7 @@ function registerUser(username, password, firstName, lastName){
                              resolve('DB error');
                              return ;
                          }
-                         dbPool.query("CREATE TABLE user_submissions_" + username + "(index INT NOT NULL, compiled BOOLEAN NOT NULL, result json NOT NULL, codepath VARCHAR(100) NOT NULL, taskname VARCHAR(100) NOT NULL, username VARCHAR(100) NOT NULL, score real, subtasks json NOT NULL)", (err, res) => {
+                         dbPool.query("CREATE TABLE user_submissions_" + username + "(index INT NOT NULL, task VARCHAR(100) NOT NULL, time timestamp default current_timestamp, name VARCHAR(100) NOT NULL, score real)", (err, res) => {
                             if(err){
                                 console.log("DB error occured: ");
                                 console.log(err);
@@ -317,8 +324,8 @@ function checkIfUserIsAdmin(username){
 function createContest(contestName){
     return new Promise((resolve, reject) => {
         dbPool.query(   //INSERT INTO persons (lastname,firstname) VALUES ('Smith', 'John') RETURNING id;
-            'INSERT INTO contests (name) VALUES ($1) RETURNING id',
-            [contestName],
+            'INSERT INTO contests (name, hidden) VALUES ($1, $2) RETURNING id',
+            [contestName, true],
             (err, result) => {
                 if (err) {
                     console.log('DB error: ' + err);
@@ -347,6 +354,7 @@ function createContest(contestName){
         );
     });
 }
+
 function getAllContests(){
     return new Promise((resolve, reject) => {
         dbPool.query('SELECT * FROM contests', (err, res) => {
@@ -358,6 +366,225 @@ function getAllContests(){
             resolve(res.rows);
         });
     });
+}
+function getAllUnhiddenContests(){
+    return new Promise((resolve, reject) => {
+        dbPool.query('SELECT * FROM contests WHERE hidden=($1)', [false], (err, res) => {
+            if(err){
+                console.log('DB error ' + err);
+                resolve([]);
+                return ;
+            }
+            resolve(res.rows);
+        });
+    });
+}
+function checkIfContestExists(contestID){
+    return new Promise((resolve, reject) => {
+        dbPool.query('SELECT * FROM contests WHERE id=($1)', [contestID], (err, res) => {
+            if(err) {
+                console.log('DB error: ' + err);
+                resolve(false);
+                return ;
+            }
+            resolve(res.rows.length >= 1);
+        });
+    });
+}
+function changeContestHiding(contestID, val){
+    return new Promise((resolve, reject) => {
+        dbPool.query('UPDATE contests SET hidden=($1) WHERE id=($2)', [val, contestID], (err, result) => {
+            if (err){
+                console.log('DB error: ' + err);
+                resolve(false);
+                return ;
+            }
+            resolve(true);
+        });
+    });
+}
+function addTaskToContest(taskName, contestID){
+    return new Promise((resolve, reject) => {
+        dbPool.query('SELECT * FROM contest_tasks_' + contestID + ' WHERE taskname=($1)', [taskName], (err, res) => {
+            if(res.rows.length){
+                resolve(false);
+                return ;
+            }
+            var qu = 'INSERT INTO contest_tasks_' + contestID + ' (taskname) VALUES ($1)';
+            dbPool.query(qu, [taskName], (err, res) => {
+                if(err) {
+                    console.log('DB error: ' + err);
+                    console.log(err);
+                    resolve(false);
+                    return ;
+                }
+                resolve(true);
+            });
+        });
+
+    });
+}
+
+function removeTaskFromContest(taskName, contestID){
+    return new Promise((resolve, reject) => {
+        var qu = 'DELETE FROM contest_tasks_' + contestID + ' WHERE taskname=($1)';
+        dbPool.query(qu, [taskName], (err, res) => {
+            if(err) {
+                console.log('DB error: ' + err);
+                console.log(err);
+                resolve(false);
+                return ;
+            }
+            resolve(true);
+        });
+    });
+
+
+}
+function getAllTasksOfContest(contestID){
+    return new Promise((resolve, reject) => {
+        dbPool.query('SELECT * FROM contest_tasks_' + contestID, [], (err, res) => {
+            if(err) {
+                console.log('DB error:' + err);
+                return ;
+            }
+            resolve(res.rows);
+        });
+    });
+}
+function getAllTasks(){
+    return new Promise((resolve, reject) => {
+        fs.readdir(path.join(__dirname, './tasks'), (err, files) => {
+            if(err){
+                console.log('FS error: ' + err);
+                resolve([]);
+                return ;
+            }
+            resolve(files);
+        });
+    });
+}
+function getAllSubmissions(index){                                               // returns the result of `index` submission
+    return new Promise((resolve, reject) => {
+        dbPool.query(
+            'SELECT * FROM submissions',
+            (err, result) => {
+                if (err){
+                    console.log('DB error: ' + err);
+                    resolve([]);
+                    return ;
+                }
+                resolve(result.rows);
+            }
+        );
+    });
+}
+function changeScore(index, score){                                               // returns the result of `index` submission
+    return new Promise((resolve, reject) => {
+        dbPool.query(
+            'UPDATE submissions SET score=($1) WHERE index=($2) RETURNING username', [score, index],
+            (err, result) => {
+                if (err){
+                    console.log('DB error: ' + err);
+                    resolve(false);
+                    return ;
+                }
+                var usr = result.rows[0].username;
+
+                dbPool.query('UPDATE user_submissions_' + usr + ' SET score=($1) WHERE index=($2)', [score, index], (err, result) => {
+                    if (err){
+                        console.log('DB error: ' + err);
+                        resolve(false);
+                        return ;
+                    }
+                    resolve(true);
+                });
+
+
+            }
+        );
+    });
+}
+function getContestData(contestID){
+    return new Promise((resolve, reject) => {
+        dbPool.query('SELECT * FROM contests WHERE id=($1)' , [contestID], (err, res) => {
+            if(err ) {
+                console.log('DB error:' + err);
+                return ;
+            }
+            if(res.rows.length == 0){
+                resolve({});
+                return ;
+            }
+            resolve(res.rows[0]);
+        });
+    });
+}
+function getScoreForTask(username, task){
+    return new Promise((resolve, reject) => {
+        dbPool.query('SELECT MAX(score) AS score FROM user_submissions_' + username + ' WHERE task=($1)' , [task], (err, res) => {
+            if(err ) {
+                console.log('DB error:' + err);
+                return ;
+            }
+            if(!res.rows[0].score){
+                resolve(0);
+                return ;
+            }
+            resolve(res.rows[0].score);
+        });
+    });
+}
+function getAllUsers(){
+    return new Promise((resolve, reject) => {
+        dbPool.query('SELECT * FROM users' , [], (err, res) => {
+            if(err ) {
+                console.log('DB error:' + err);
+                return ;
+            }
+            resolve(res.rows);
+        });
+    });
+}
+function getScoreForTaskHere(user, task, i, j){
+    return new Promise((resolve, reject) => {
+        getScoreForTask(user, task).then((score) => {
+            resolve({score: score, i: i, j: j});
+        });
+    });
+}
+async function getLead(users, tasks){
+    var ret = [];
+    console.log('get lead: ');
+    console.log(tasks);
+    console.log(users);
+    for(var i = 0; i < users.length; i++){
+        var ths = [];
+        for(var j = 0; j < tasks.length; j++){
+            await getScoreForTaskHere(users[i], tasks[j], i, j).then((res) => {
+                ths[res.j] = res.score;
+            });
+        }
+        ret[i] = ths;
+    }
+    return new Promise((resolve, reject) => {
+        resolve(ret);
+    });
+}
+function getLeaderboard(contest){
+    return new Promise((resolve, reject) => {
+        getAllTasksOfContest(contest).then((data) => {
+            var tasks = data.map((task) => task.taskname);
+            getAllUsers().then((users1) => {
+                var users = users1.map((user) => user.username);
+                getLead(users, tasks).then((ret) => {
+                    resolve({leaderboard: ret, users: users, tasks: tasks});
+                });
+            });
+
+        });
+    });
+
 }
 module.exports = {
     getLastSubmissionNumber,
@@ -373,5 +600,17 @@ module.exports = {
     registerUser,
     createContest,
     checkIfUserIsAdmin,
-    getAllContests
+    checkIfContestExists,
+    addTaskToContest,
+    getAllTasksOfContest,
+    getAllTasks,
+    removeTaskFromContest,
+    getAllSubmissions,
+    changeScore,
+    getAllContests,
+    changeContestHiding,
+    getAllUnhiddenContests,
+    getContestData,
+    getScoreForTask,
+    getLeaderboard
 }

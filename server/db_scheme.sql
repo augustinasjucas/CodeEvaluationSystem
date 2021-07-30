@@ -24,7 +24,8 @@ CREATE TABLE submissions(
     taskname   VARCHAR(100) NOT NULL,
     username   VARCHAR(100) NOT NULL,
     score      real,
-    subtasks   json NOT NULL
+    subtasks   json NOT NULL,
+    time       timestamp default current_timestamp
 );
 
 CREATE TABLE user_submissions_admin(
@@ -37,5 +38,6 @@ CREATE TABLE user_submissions_admin(
 
 CREATE TABLE contests (
     id         SERIAL PRIMARY KEY,
+    hidden     BOOLEAN NOT NULL,
     name       VARCHAR(100) NOT NULL
 );
