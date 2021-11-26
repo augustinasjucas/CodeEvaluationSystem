@@ -2,13 +2,17 @@
 
 A sample statement is SAMPLE_STATEMENT.txt
 
-To download all the node_modules:
+### Installation
+
+Clone or download the repository. Then do the following:
+
+#### Download all the node_modules:
 `
 npm install && cd client && npm install && npm run build
 `.
 
 
-To install database: 
+#### Install the database: 
 
 `
 sudo apt install postgresql postgresql-contrib
@@ -39,7 +43,6 @@ Finally, locate the db_schemes.sql file in /server folder and type:
 \i /home/USERNAME/SistemaAA/server/db_scheme.sql
 `
 
-
 In order to insert a user, type:
 `
 INSERT INTO users(username, password) VALUES('insertUsername', 'insertHashedPassword');
@@ -52,17 +55,16 @@ ALTER USER postgres PASSWORD 'myPassword';
 `
 
 
-To start the server:
+#### Starting the back-end server
+Type into the terminal:
 `
 npm start
 `.
-To start the client:
+
+#### Starting the client server
 `
 cd client && npm start
 `.
 
 Then the client will be on `localhost:3000` and the server on `localhost:3001`
-
-Also, when deploying this project, certain lines will have to be uncommented in order for the
-client to be on the same domain as the server.
 
