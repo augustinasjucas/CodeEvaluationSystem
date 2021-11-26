@@ -1,6 +1,6 @@
 # Code Evaluation System
 
-## What is this system for
+## What is this system for?
 Here, you can create competitive programming tasks, add tests and checkers for them and have the submissions be evaluated in the back-end server.
 
 ## Screenshots
