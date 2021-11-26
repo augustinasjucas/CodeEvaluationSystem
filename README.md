@@ -6,54 +6,18 @@ A sample statement is SAMPLE_STATEMENT.txt
 
 Clone or download the repository. Then do the following:
 
-#### Download all the node_modules:
-`
-npm install && cd client && npm install && npm run build
-`.
+#### Download all the node_modules
+Just type `npm install && cd client && npm install && npm run build`.
 
 
-#### Install the database: 
-
-`
-sudo apt install postgresql postgresql-contrib
-`
-Go to `example_dbPool.js`, copy it and create a new file `dbPool.js`, then change the password (inside of this file) to the password of your PC.
-
-Then connect to the database:
-`
-sudo -u postgres -i
-`
-Then type:
-`
-psql
-`.
-
-Then create the neccessary DB:
-`
-CREATE DATABASE codeevaluationdb;
-`
-
-After that, in order to connect to DB, type:
-`
-\c codeevaluationdb
-`
-
-Finally, locate the db_schemes.sql file in /server folder and type:
-`
-\i /home/USERNAME/SistemaAA/server/db_scheme.sql
-`
-
-In order to insert a user, type:
-`
-INSERT INTO users(username, password) VALUES('insertUsername', 'insertHashedPassword');
-`
-
-Open new terminal, type:
-`
-sudo -u postgres psql
-ALTER USER postgres PASSWORD 'myPassword';
-`
-
+#### Installing  the database
+1. Type `sudo apt install postgresql postgresql-contrib`.
+2. Go to `example_dbPool.js`, copy it and create a new file `dbPool.js`, then change the password (inside of this file) to the password of your PC.
+3. Connect to the database server: `sudo -u postgres -i`.
+4. Type into the terminal `psql`.
+5. Create the neccessary DB: `CREATE DATABASE codeevaluationdb;`.
+6. In order to connect to DB, type: `\c codeevaluationdb`.
+7. Locate the db_schemes.sql file in /server folder and type: `\i /home/USERNAME/SistemaAA/server/db_scheme.sql`
 
 #### Starting the back-end server
 Type into the terminal:
