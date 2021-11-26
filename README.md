@@ -1,6 +1,4 @@
-# SistemaAA
-
-A sample statement is SAMPLE_STATEMENT.txt
+# Code Evaluation System
 
 ### Installation
 
@@ -20,15 +18,10 @@ Just type `npm install && cd client && npm install && npm run build`.
 7. Locate the db_schemes.sql file in /server folder and type: `\i /home/USERNAME/SistemaAA/server/db_scheme.sql`
 
 #### Starting the back-end server
-Type into the terminal:
-`
-npm start
-`.
+Type into the terminal: `npm start`.
 
 #### Starting the client server
-`
-cd client && npm start
-`.
+Just type in `cd client && npm start`.
 
 Then the client will be on `localhost:3000` and the server on `localhost:3001`
 
