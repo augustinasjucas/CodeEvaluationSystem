@@ -3,8 +3,6 @@
 ## What is this system for?
 Here, you can create competitive programming tasks, add tests and checkers for them and have the submissions be evaluated in the back-end server.
 
-## Screenshots
-
 ## Installation
 
 Clone or download the repository. Then do the following:
@@ -30,3 +28,5 @@ Just type in `cd client && npm start`.
 
 Then the client will be on `localhost:3000` and the server on `localhost:3001`
 
+## Screenshots
+![](screenshots/1.png)
