@@ -5,7 +5,7 @@
 In this system, one can create and store competitive programming tasks. Each task consist
 - a statement of the task; 
 - tests which validate the correctness of some possible solution to the task; 
-- [optional], a checker program, which tests whether the solution to the problem was correct). 
+- [optional] a checker program, which tests whether the solution to the problem was correct). 
 
 The system is capable of:
 - displaying the statement of the task; 
