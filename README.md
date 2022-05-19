@@ -1,7 +1,18 @@
 # Code Evaluation System
 
 ## What is this system for?
-Here, you can create competitive programming tasks, add tests and checkers for them and have the submissions be evaluated in the back-end server.
+
+In this system, one can create and store competitive programming tasks. Each task consist
+- a statement of the task; 
+- tests which validate the correctness of some possible solution to the task; 
+- [optional], a checker program, which tests whether the solution to the problem was correct). 
+
+The system is capable of:
+- displaying the statement of the task; 
+- receiving the solutions to the task, compiling them and running them against the tests, provided by the creator of the task. 
+
+
+In short, you can create competitive programming tasks, add tests and checkers for them and have the submissions be evaluated in the back-end server.
 
 ## Installation
 
